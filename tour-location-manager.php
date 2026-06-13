@@ -4,8 +4,8 @@
  * Plugin URI:         https://example.com/tour-location-manager
  * Description:        Adds a hierarchical "Location" taxonomy (Country > State/Province > City) for WooCommerce products, with SEO-friendly archives, a navigable location tree shortcode, and admin settings.
  * Version:            1.0.0
- * Author:             Your Company
- * Author URI:         https://example.com
+ * Author:             Imran Bajwa
+ * Company:            INT SERVICES LLC
  * Text Domain:        tour-location-manager
  * Domain Path:        /languages
  * Requires at least:  5.8
