@@ -1,0 +1,143 @@
+<?php
+/**
+ * Template for displaying "location" taxonomy archives.
+ *
+ * Behavior depends on the term's position in the hierarchy:
+ * - Country / State (has child locations): shows the sub-location tree
+ *   for that term, plus any products assigned directly to it.
+ * - City (no children): shows only the products assigned to that city.
+ *
+ * Theme developers can override this entirely by adding a
+ * taxonomy-location.php file to their theme.
+ *
+ * @package Tour_Location_Manager
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+get_header();
+
+$queried_term = get_queried_object();
+?>
+
+<div id="primary" class="content-area tlm-archive-content">
+	<main id="main" class="site-main">
+
+		<?php if ( $queried_term instanceof WP_Term ) : ?>
+
+			<header class="tlm-archive-header page-header">
+
+				<?php
+				$breadcrumb = tlm_get_location_breadcrumb( $queried_term->term_id );
+				if ( $breadcrumb ) {
+					echo '<nav class="tlm-breadcrumb" aria-label="' . esc_attr__( 'Location breadcrumb', 'tour-location-manager' ) . '">';
+					echo wp_kses_post( $breadcrumb );
+					echo '</nav>';
+				}
+				?>
+
+				<h1 class="page-title">
+					<?php
+					printf(
+						/* translators: 1: level label (Country/State/City), 2: location name */
+						esc_html__( '%1$s: %2$s', 'tour-location-manager' ),
+						esc_html( tlm_get_level_label( $queried_term->term_id ) ),
+						esc_html( $queried_term->name )
+					);
+					?>
+				</h1>
+
+				<?php if ( ! empty( $queried_term->description ) ) : ?>
+					<div class="taxonomy-description">
+						<?php echo wp_kses_post( wpautop( $queried_term->description ) ); ?>
+					</div>
+				<?php endif; ?>
+			</header>
+
+			<?php
+			$children = tlm_get_child_locations( $queried_term->term_id, false );
+			?>
+
+			<?php if ( ! empty( $children ) ) : ?>
+				<section class="tlm-sub-locations">
+					<h2>
+						<?php
+						if ( 0 === tlm_get_term_depth( $queried_term->term_id ) ) {
+							esc_html_e( 'States &amp; Provinces', 'tour-location-manager' );
+						} else {
+							esc_html_e( 'Cities', 'tour-location-manager' );
+						}
+						?>
+					</h2>
+					<?php echo do_shortcode( '[tour_location_menu parent="' . absint( $queried_term->term_id ) . '"]' ); ?>
+				</section>
+			<?php endif; ?>
+
+			<section class="tlm-location-products">
+
+				<?php
+				// On Country/State pages, optionally include products tagged to
+				// child locations as well, so e.g. "Germany" can show Munich tours too.
+				$include_children = ( ! empty( $children ) );
+
+				$products_query = tlm_get_products_for_location( $queried_term->term_id, $include_children );
+				?>
+
+				<h2>
+					<?php
+					printf(
+						/* translators: %s: location name */
+						esc_html__( 'Tours &amp; Services in %s', 'tour-location-manager' ),
+						esc_html( $queried_term->name )
+					);
+					?>
+				</h2>
+
+				<?php if ( $products_query->have_posts() ) : ?>
+
+					<ul class="products tlm-products columns-3">
+						<?php
+						while ( $products_query->have_posts() ) :
+							$products_query->the_post();
+							wc_get_template_part( 'content', 'product' );
+						endwhile;
+						?>
+					</ul>
+
+					<?php
+					$big = 999999999;
+					echo wp_kses_post(
+						paginate_links(
+							array(
+								'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+								'format'    => '?paged=%#%',
+								'current'   => max( 1, get_query_var( 'paged' ) ),
+								'total'     => $products_query->max_num_pages,
+								'prev_text' => __( '&larr; Previous', 'tour-location-manager' ),
+								'next_text' => __( 'Next &rarr;', 'tour-location-manager' ),
+							)
+						)
+					);
+					?>
+
+				<?php else : ?>
+					<p class="tlm-no-products">
+						<?php esc_html_e( 'No tours or services are currently available for this location.', 'tour-location-manager' ); ?>
+					</p>
+				<?php endif; ?>
+
+				<?php wp_reset_postdata(); ?>
+			</section>
+
+		<?php else : ?>
+			<p><?php esc_html_e( 'Location not found.', 'tour-location-manager' ); ?></p>
+		<?php endif; ?>
+
+	</main>
+</div>
+
+<?php
+get_sidebar();
+get_footer();

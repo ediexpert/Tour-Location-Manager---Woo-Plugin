@@ -1,0 +1,42 @@
+# Copyright (C) 2026 Tour Location Manager
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Tour Location Manager 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-13 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: LANGUAGE <[email protected]>\n"
+"X-Generator: WP-CLI / Manual\n"
+"X-Domain: tour-location-manager\n"
+
+#. Plugin Name of the plugin
+msgid "Tour Location Manager"
+msgstr ""
+
+#: includes/class-tlm-taxonomy.php
+msgid "Locations"
+msgstr ""
+
+#: includes/class-tlm-taxonomy.php
+msgid "Location"
+msgstr ""
+
+#: includes/tlm-helper-functions.php
+msgid "Country"
+msgstr ""
+
+#: includes/tlm-helper-functions.php
+msgid "State/Province"
+msgstr ""
+
+#: includes/tlm-helper-functions.php
+msgid "City"
+msgstr ""
+
+#
+# NOTE: Run `wp i18n make-pot . languages/tour-location-manager.pot`
+# from the plugin root to regenerate this file with all current strings.
+#

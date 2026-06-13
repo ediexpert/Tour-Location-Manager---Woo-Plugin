@@ -1,0 +1,12 @@
+/**
+ * Tour Location Manager — Admin Styles
+ */
+
+.term-order-wrap input[type="number"] {
+	width: 6em;
+}
+
+.column-tlm_location,
+.column-tlm_level {
+	width: 14%;
+}
