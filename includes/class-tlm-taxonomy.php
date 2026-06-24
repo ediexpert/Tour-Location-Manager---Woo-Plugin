@@ -50,6 +50,17 @@ class TLM_Taxonomy {
 		// Add a "Level" column (Country/State/City) for clarity in admin term list.
 		add_filter( 'manage_edit-' . TLM_TAXONOMY . '_columns', array( $this, 'add_level_column' ) );
 		add_filter( 'manage_' . TLM_TAXONOMY . '_custom_column', array( $this, 'render_level_column' ), 10, 3 );
+
+		// Thumbnail field on add/edit term screens.
+		add_action( TLM_TAXONOMY . '_add_form_fields', array( $this, 'add_thumbnail_field' ) );
+		add_action( TLM_TAXONOMY . '_edit_form_fields', array( $this, 'edit_thumbnail_field' ) );
+		add_action( 'created_' . TLM_TAXONOMY, array( $this, 'save_thumbnail_field' ) );
+		add_action( 'edited_' . TLM_TAXONOMY, array( $this, 'save_thumbnail_field' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+
+		// Thumbnail column in admin term list.
+		add_filter( 'manage_edit-' . TLM_TAXONOMY . '_columns', array( $this, 'add_thumbnail_column' ) );
+		add_filter( 'manage_' . TLM_TAXONOMY . '_custom_column', array( $this, 'render_thumbnail_column' ), 10, 3 );
 	}
 
 	/**
@@ -209,6 +220,129 @@ class TLM_Taxonomy {
 			$order = absint( $_POST['tlm_order'] );
 			update_term_meta( $term_id, 'tlm_order', $order );
 		}
+	}
+
+	/**
+	 * Enqueue the WP media uploader on the location taxonomy screens.
+	 */
+	public function enqueue_admin_scripts( $hook ) {
+		$screen = get_current_screen();
+		// 'edit-location' = term list/add page; 'location' = edit single term page.
+		if ( ! $screen || ! in_array( $screen->id, array( 'edit-' . TLM_TAXONOMY, TLM_TAXONOMY ), true ) ) {
+			return;
+		}
+
+		wp_enqueue_media();
+		wp_enqueue_script(
+			'tlm-admin-thumbnail',
+			TLM_PLUGIN_URL . 'assets/js/tlm-admin-thumbnail.js',
+			array( 'jquery' ),
+			TLM_VERSION,
+			true
+		);
+	}
+
+	/**
+	 * Output the thumbnail upload field on the Add Term screen.
+	 */
+	public function add_thumbnail_field() {
+		?>
+		<div class="form-field term-thumbnail-wrap">
+			<label><?php esc_html_e( 'Thumbnail', 'tour-location-manager' ); ?></label>
+			<div class="tlm-thumbnail-preview" id="tlm-thumbnail-preview"></div>
+			<input type="hidden" name="tlm_thumbnail_id" id="tlm_thumbnail_id" value="" />
+			<button type="button" class="button tlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'tour-location-manager' ); ?></button>
+			<button type="button" class="button tlm-remove-thumbnail" style="display:none;"><?php esc_html_e( 'Remove Image', 'tour-location-manager' ); ?></button>
+			<p class="description"><?php esc_html_e( 'Thumbnail image shown when displaying locations in a grid.', 'tour-location-manager' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Output the thumbnail upload field on the Edit Term screen.
+	 *
+	 * @param WP_Term $term Term object.
+	 */
+	public function edit_thumbnail_field( $term ) {
+		$thumbnail_id = (int) get_term_meta( $term->term_id, 'tlm_thumbnail_id', true );
+		$image_src    = $thumbnail_id ? wp_get_attachment_image_url( $thumbnail_id, 'thumbnail' ) : '';
+		?>
+		<tr class="form-field term-thumbnail-wrap">
+			<th scope="row"><label><?php esc_html_e( 'Thumbnail', 'tour-location-manager' ); ?></label></th>
+			<td>
+				<div class="tlm-thumbnail-preview" id="tlm-thumbnail-preview">
+					<?php if ( $image_src ) : ?>
+						<img src="<?php echo esc_url( $image_src ); ?>" alt="" style="max-width:150px;display:block;margin-bottom:6px;" />
+					<?php endif; ?>
+				</div>
+				<input type="hidden" name="tlm_thumbnail_id" id="tlm_thumbnail_id" value="<?php echo esc_attr( $thumbnail_id ?: '' ); ?>" />
+				<button type="button" class="button tlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'tour-location-manager' ); ?></button>
+				<button type="button" class="button tlm-remove-thumbnail"<?php echo $thumbnail_id ? '' : ' style="display:none;"'; ?>><?php esc_html_e( 'Remove Image', 'tour-location-manager' ); ?></button>
+				<p class="description"><?php esc_html_e( 'Thumbnail image shown when displaying locations in a grid.', 'tour-location-manager' ); ?></p>
+			</td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Save the thumbnail attachment ID as term meta.
+	 *
+	 * @param int $term_id Term ID.
+	 */
+	public function save_thumbnail_field( $term_id ) {
+		if ( ! isset( $_POST['tlm_thumbnail_id'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_product_terms' ) && ! current_user_can( 'edit_terms' ) ) {
+			return;
+		}
+
+		$thumbnail_id = absint( $_POST['tlm_thumbnail_id'] );
+		if ( $thumbnail_id ) {
+			update_term_meta( $term_id, 'tlm_thumbnail_id', $thumbnail_id );
+		} else {
+			delete_term_meta( $term_id, 'tlm_thumbnail_id' );
+		}
+	}
+
+	/**
+	 * Add a "Thumbnail" column to the admin term list (before the Level column).
+	 *
+	 * @param array $columns Existing columns.
+	 * @return array
+	 */
+	public function add_thumbnail_column( $columns ) {
+		$new = array();
+		foreach ( $columns as $key => $label ) {
+			if ( 'name' === $key ) {
+				$new['tlm_thumbnail'] = __( 'Thumbnail', 'tour-location-manager' );
+			}
+			$new[ $key ] = $label;
+		}
+		return $new;
+	}
+
+	/**
+	 * Render the thumbnail column content.
+	 *
+	 * @param string $content     Existing content.
+	 * @param string $column_name Column name.
+	 * @param int    $term_id     Term ID.
+	 * @return string
+	 */
+	public function render_thumbnail_column( $content, $column_name, $term_id ) {
+		if ( 'tlm_thumbnail' !== $column_name ) {
+			return $content;
+		}
+
+		$thumbnail_id = (int) get_term_meta( $term_id, 'tlm_thumbnail_id', true );
+		if ( ! $thumbnail_id ) {
+			return '<span aria-hidden="true">—</span>';
+		}
+
+		$img = wp_get_attachment_image( $thumbnail_id, array( 44, 44 ), false, array( 'style' => 'border-radius:3px;' ) );
+		return $img ?: '<span aria-hidden="true">—</span>';
 	}
 
 	/**

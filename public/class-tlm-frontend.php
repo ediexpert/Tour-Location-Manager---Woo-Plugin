@@ -38,6 +38,7 @@ class TLM_Frontend {
 	 */
 	private function __construct() {
 		add_shortcode( 'tour_location_menu', array( $this, 'render_location_menu_shortcode' ) );
+		add_shortcode( 'tour_locations', array( $this, 'render_tour_locations_shortcode' ) );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
@@ -92,7 +93,8 @@ class TLM_Frontend {
 			return false;
 		}
 
-		return has_shortcode( $post->post_content, 'tour_location_menu' );
+		return has_shortcode( $post->post_content, 'tour_location_menu' )
+			|| has_shortcode( $post->post_content, 'tour_locations' );
 	}
 
 	/**
@@ -234,6 +236,106 @@ class TLM_Frontend {
 				<h3 class="tlm-location-menu-title"><?php echo esc_html( $atts['title'] ); ?></h3>
 			<?php endif; ?>
 			<?php echo $this->render_term_list( $top_terms, 1, $max_depth, $show_counts ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Shortcode handler: [tour_locations ids="1,2,3" orderby="name" order="ASC" columns="3" hide_empty="1" parent="0" show_counts="no"]
+	 *
+	 * Renders a grid of location cards with thumbnail, name, and optional product count —
+	 * modelled on WooCommerce's [product_categories] shortcode.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string HTML output.
+	 */
+	public function render_tour_locations_shortcode( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'ids'         => '',
+				'orderby'     => 'name',
+				'order'       => 'ASC',
+				'columns'     => 3,
+				'hide_empty'  => 1,
+				'parent'      => '',
+				'show_counts' => 'no',
+			),
+			$atts,
+			'tour_locations'
+		);
+
+		$query_args = array(
+			'taxonomy'   => TLM_TAXONOMY,
+			'hide_empty' => (bool) $atts['hide_empty'],
+			'order'      => strtoupper( $atts['order'] ) === 'DESC' ? 'DESC' : 'ASC',
+		);
+
+		// ids= overrides everything else.
+		if ( '' !== $atts['ids'] ) {
+			$ids                = array_map( 'absint', explode( ',', $atts['ids'] ) );
+			$query_args['include'] = $ids;
+			if ( 'include' === $atts['orderby'] ) {
+				$query_args['orderby'] = 'include';
+			} else {
+				$query_args['orderby'] = sanitize_key( $atts['orderby'] );
+			}
+		} else {
+			$query_args['orderby'] = sanitize_key( $atts['orderby'] );
+			if ( '' !== $atts['parent'] ) {
+				$query_args['parent'] = absint( $atts['parent'] );
+			}
+		}
+
+		$terms = get_terms( $query_args );
+
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return '<p class="tlm-empty">' . esc_html__( 'No locations found.', 'tour-location-manager' ) . '</p>';
+		}
+
+		$columns     = max( 1, min( 6, absint( $atts['columns'] ) ) );
+		$show_counts = ( 'yes' === strtolower( $atts['show_counts'] ) );
+
+		// Tell WooCommerce's loop helpers how many columns we want.
+		wc_set_loop_prop( 'columns', $columns );
+
+		ob_start();
+		?>
+		<div class="woocommerce">
+			<?php woocommerce_product_loop_start(); ?>
+
+			<?php foreach ( $terms as $term ) : ?>
+				<?php
+				$thumbnail_id = (int) get_term_meta( $term->term_id, 'tlm_thumbnail_id', true );
+
+				// Use wp_get_attachment_image() to get proper srcset/sizes; fall back to
+				// WooCommerce's placeholder image (full <img> tag) when none is set.
+				if ( $thumbnail_id ) {
+					$image = wp_get_attachment_image(
+						$thumbnail_id,
+						'woocommerce_thumbnail',
+						false,
+						array( 'class' => 'attachment-woocommerce_thumbnail size-woocommerce_thumbnail' )
+					) ?: wc_placeholder_img( 'woocommerce_thumbnail' );
+				} else {
+					$image = wc_placeholder_img( 'woocommerce_thumbnail' );
+				}
+				?>
+				<li <?php wc_product_cat_class( '', $term ); ?>>
+					<a href="<?php echo esc_url( get_term_link( $term ) ); ?>">
+						<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- produced by WP/WC functions ?>
+
+						<h2 class="woocommerce-loop-category__title">
+							<?php echo esc_html( $term->name ); ?>
+							<?php if ( $show_counts && $term->count > 0 ) : ?>
+								<mark class="count">(<?php echo absint( $term->count ); ?>)</mark>
+							<?php endif; ?>
+						</h2>
+					</a>
+				</li>
+			<?php endforeach; ?>
+
+			<?php woocommerce_product_loop_end(); ?>
 		</div>
 		<?php
 		return ob_get_clean();

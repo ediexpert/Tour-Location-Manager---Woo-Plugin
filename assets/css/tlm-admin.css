@@ -10,3 +10,14 @@
 .column-tlm_level {
 	width: 14%;
 }
+
+.column-tlm_thumbnail {
+	width: 52px;
+}
+
+.tlm-thumbnail-preview img {
+	max-width: 150px;
+	display: block;
+	margin-bottom: 6px;
+	border-radius: 3px;
+}
