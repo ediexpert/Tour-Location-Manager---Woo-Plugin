@@ -296,20 +296,18 @@ class TLM_Frontend {
 		$columns     = max( 1, min( 6, absint( $atts['columns'] ) ) );
 		$show_counts = ( 'yes' === strtolower( $atts['show_counts'] ) );
 
-		// Tell WooCommerce's loop helpers how many columns we want.
+		// Tell WooCommerce's loop helpers how many columns we want (for any WC hooks that read it).
 		wc_set_loop_prop( 'columns', $columns );
 
 		ob_start();
 		?>
-		<div class="woocommerce">
-			<?php woocommerce_product_loop_start(); ?>
+		<div class="woocommerce columns-<?php echo esc_attr( $columns ); ?> tlm-locations-grid">
+			<ul class="products columns-<?php echo esc_attr( $columns ); ?>" style="--wc-columns:<?php echo esc_attr( $columns ); ?>">
 
 			<?php foreach ( $terms as $term ) : ?>
 				<?php
 				$thumbnail_id = (int) get_term_meta( $term->term_id, 'tlm_thumbnail_id', true );
 
-				// Use wp_get_attachment_image() to get proper srcset/sizes; fall back to
-				// WooCommerce's placeholder image (full <img> tag) when none is set.
 				if ( $thumbnail_id ) {
 					$image = wp_get_attachment_image(
 						$thumbnail_id,
@@ -322,9 +320,11 @@ class TLM_Frontend {
 				}
 				?>
 				<li <?php wc_product_cat_class( '', $term ); ?>>
-					<a href="<?php echo esc_url( get_term_link( $term ) ); ?>">
-						<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- produced by WP/WC functions ?>
-
+					<a href="<?php echo esc_url( get_term_link( $term ) ); ?>"
+					   aria-label="<?php echo esc_attr( sprintf( __( 'Visit location %s', 'tour-location-manager' ), $term->name ) ); ?>">
+						<span class="cat-image-wrapper">
+							<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- produced by WP/WC functions ?>
+						</span>
 						<h2 class="woocommerce-loop-category__title">
 							<?php echo esc_html( $term->name ); ?>
 							<?php if ( $show_counts && $term->count > 0 ) : ?>
@@ -335,7 +335,7 @@ class TLM_Frontend {
 				</li>
 			<?php endforeach; ?>
 
-			<?php woocommerce_product_loop_end(); ?>
+			</ul>
 		</div>
 		<?php
 		return ob_get_clean();

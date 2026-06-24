@@ -111,3 +111,39 @@
 	color: #777;
 }
 
+/* =========================================================
+   [tour_locations] grid — scoped column-count enforcement
+   Works with Shoptimizer, Flatsome, OceanWP, Elementor-based
+   themes that output their own Customizer-driven li widths.
+   We use CSS Grid + --wc-columns so column count is always
+   respected without touching any other product grid on the page.
+   ========================================================= */
+
+.tlm-locations-grid ul.products {
+	display: grid !important;
+	grid-template-columns: repeat( var( --wc-columns, 3 ), 1fr ) !important;
+	gap: 1.5em !important;
+	/* Reset float/flex overrides themes may apply */
+	margin-left: 0 !important;
+}
+
+.tlm-locations-grid ul.products li.product {
+	/* Let CSS Grid control sizing; reset anything the theme forces */
+	width: auto !important;
+	margin: 0 !important;
+	float: none !important;
+	clear: none !important;
+}
+
+@media ( max-width: 768px ) {
+	.tlm-locations-grid ul.products {
+		grid-template-columns: repeat( 2, 1fr ) !important;
+	}
+}
+
+@media ( max-width: 480px ) {
+	.tlm-locations-grid ul.products {
+		grid-template-columns: 1fr !important;
+	}
+}
+
