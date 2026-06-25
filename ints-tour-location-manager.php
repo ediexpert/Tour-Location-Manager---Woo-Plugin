@@ -1,16 +1,19 @@
 <?php
 /**
- * Plugin Name:       Tour Location Manager
- * Plugin URI:         https://example.com/tour-location-manager
+ * Plugin Name:       INTS Tour Location Manager
  * Description:        Adds a hierarchical "Location" taxonomy (Country > State/Province > City) for WooCommerce products, with SEO-friendly archives, a navigable location tree shortcode, and admin settings.
  * Version:            1.0.0
  * Author:             Imran Bajwa
- * Company:            INT SERVICES LLC
- * Text Domain:        tour-location-manager
+ * Author URI:         https://profiles.wordpress.org/imbajwa/
+ * Text Domain:        ints-tour-location-manager
  * Domain Path:        /languages
  * Requires at least:  5.8
+ * Tested up to:       7.0
  * Requires PHP:       7.4
+ * License:            GPL v2 or later
+ * License URI:        https://www.gnu.org/licenses/gpl-2.0.html
  * WC requires at least: 5.0
+ * WC tested up to:    9.4
  *
  * @package Tour_Location_Manager
  */
@@ -62,6 +65,23 @@ spl_autoload_register(
 );
 
 /**
+ * Declare compatibility with WooCommerce features.
+ *
+ * High Performance Order Storage (HPOS): this plugin does not interact
+ * with orders, so it is fully compatible.
+ * Cart & Checkout Blocks: no custom checkout steps, so compatible.
+ */
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', TLM_PLUGIN_FILE, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', TLM_PLUGIN_FILE, true );
+		}
+	}
+);
+
+/**
  * Activation hook.
  *
  * Registers the taxonomy (so its rewrite rules exist) and flushes
@@ -72,8 +92,8 @@ function tlm_activate_plugin() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		deactivate_plugins( plugin_basename( TLM_PLUGIN_FILE ) );
 		wp_die(
-			esc_html__( 'Tour Location Manager requires WooCommerce to be installed and active.', 'tour-location-manager' ),
-			esc_html__( 'Plugin Activation Error', 'tour-location-manager' ),
+			esc_html__( 'Tour Location Manager requires WooCommerce to be installed and active.', 'ints-tour-location-manager' ),
+			esc_html__( 'Plugin Activation Error', 'ints-tour-location-manager' ),
 			array( 'back_link' => true )
 		);
 	}
@@ -107,9 +127,6 @@ register_deactivation_hook( TLM_PLUGIN_FILE, 'tlm_deactivate_plugin' );
  */
 function tlm_run_plugin() {
 
-	// Load translations.
-	load_plugin_textdomain( 'tour-location-manager', false, dirname( plugin_basename( TLM_PLUGIN_FILE ) ) . '/languages' );
-
 	// Bail early with an admin notice if WooCommerce is missing.
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		add_action(
@@ -117,7 +134,7 @@ function tlm_run_plugin() {
 			function () {
 				if ( current_user_can( 'activate_plugins' ) ) {
 					echo '<div class="notice notice-error"><p>' .
-						esc_html__( 'Tour Location Manager requires WooCommerce to be installed and active.', 'tour-location-manager' ) .
+						esc_html__( 'Tour Location Manager requires WooCommerce to be installed and active.', 'ints-tour-location-manager' ) .
 						'</p></div>';
 				}
 			}

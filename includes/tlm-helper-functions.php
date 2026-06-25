@@ -47,13 +47,13 @@ function tlm_get_term_depth( $term_id ) {
 function tlm_get_level_label( $term_id ) {
 	switch ( tlm_get_term_depth( $term_id ) ) {
 		case 0:
-			return __( 'Country', 'tour-location-manager' );
+			return __( 'Country', 'ints-tour-location-manager' );
 		case 1:
-			return __( 'State/Province', 'tour-location-manager' );
+			return __( 'State/Province', 'ints-tour-location-manager' );
 		case 2:
-			return __( 'City', 'tour-location-manager' );
+			return __( 'City', 'ints-tour-location-manager' );
 		default:
-			return __( 'Location', 'tour-location-manager' );
+			return __( 'Location', 'ints-tour-location-manager' );
 	}
 }
 

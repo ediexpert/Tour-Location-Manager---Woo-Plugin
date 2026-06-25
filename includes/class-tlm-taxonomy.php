@@ -78,25 +78,25 @@ class TLM_Taxonomy {
 		$archive_base = ! empty( $settings['archive_base'] ) ? $settings['archive_base'] : $slug;
 
 		$labels = array(
-			'name'                       => _x( 'Locations', 'taxonomy general name', 'tour-location-manager' ),
-			'singular_name'              => _x( 'Location', 'taxonomy singular name', 'tour-location-manager' ),
-			'search_items'               => __( 'Search Locations', 'tour-location-manager' ),
-			'popular_items'              => __( 'Popular Locations', 'tour-location-manager' ),
-			'all_items'                  => __( 'All Locations', 'tour-location-manager' ),
-			'parent_item'                => __( 'Parent Location', 'tour-location-manager' ),
-			'parent_item_colon'          => __( 'Parent Location:', 'tour-location-manager' ),
-			'edit_item'                  => __( 'Edit Location', 'tour-location-manager' ),
-			'update_item'                => __( 'Update Location', 'tour-location-manager' ),
-			'add_new_item'               => __( 'Add New Location', 'tour-location-manager' ),
-			'new_item_name'              => __( 'New Location Name', 'tour-location-manager' ),
-			'separate_items_with_commas' => __( 'Separate locations with commas', 'tour-location-manager' ),
-			'add_or_remove_items'        => __( 'Add or remove locations', 'tour-location-manager' ),
-			'choose_from_most_used'      => __( 'Choose from the most used locations', 'tour-location-manager' ),
-			'not_found'                  => __( 'No locations found.', 'tour-location-manager' ),
-			'menu_name'                  => __( 'Locations', 'tour-location-manager' ),
-			'back_to_items'              => __( '← Back to Locations', 'tour-location-manager' ),
-			'item_link'                  => __( 'Location Link', 'tour-location-manager' ),
-			'item_link_description'      => __( 'A link to a location.', 'tour-location-manager' ),
+			'name'                       => _x( 'Locations', 'taxonomy general name', 'ints-tour-location-manager' ),
+			'singular_name'              => _x( 'Location', 'taxonomy singular name', 'ints-tour-location-manager' ),
+			'search_items'               => __( 'Search Locations', 'ints-tour-location-manager' ),
+			'popular_items'              => __( 'Popular Locations', 'ints-tour-location-manager' ),
+			'all_items'                  => __( 'All Locations', 'ints-tour-location-manager' ),
+			'parent_item'                => __( 'Parent Location', 'ints-tour-location-manager' ),
+			'parent_item_colon'          => __( 'Parent Location:', 'ints-tour-location-manager' ),
+			'edit_item'                  => __( 'Edit Location', 'ints-tour-location-manager' ),
+			'update_item'                => __( 'Update Location', 'ints-tour-location-manager' ),
+			'add_new_item'               => __( 'Add New Location', 'ints-tour-location-manager' ),
+			'new_item_name'              => __( 'New Location Name', 'ints-tour-location-manager' ),
+			'separate_items_with_commas' => __( 'Separate locations with commas', 'ints-tour-location-manager' ),
+			'add_or_remove_items'        => __( 'Add or remove locations', 'ints-tour-location-manager' ),
+			'choose_from_most_used'      => __( 'Choose from the most used locations', 'ints-tour-location-manager' ),
+			'not_found'                  => __( 'No locations found.', 'ints-tour-location-manager' ),
+			'menu_name'                  => __( 'Locations', 'ints-tour-location-manager' ),
+			'back_to_items'              => __( '← Back to Locations', 'ints-tour-location-manager' ),
+			'item_link'                  => __( 'Location Link', 'ints-tour-location-manager' ),
+			'item_link_description'      => __( 'A link to a location.', 'ints-tour-location-manager' ),
 		);
 
 		$args = array(
@@ -173,10 +173,11 @@ class TLM_Taxonomy {
 	public function add_order_field() {
 		?>
 		<div class="form-field term-order-wrap">
-			<label for="tlm_order"><?php esc_html_e( 'Display Order', 'tour-location-manager' ); ?></label>
+			<label for="tlm_order"><?php esc_html_e( 'Display Order', 'ints-tour-location-manager' ); ?></label>
+			<?php wp_nonce_field( 'tlm_save_term_meta', 'tlm_term_nonce' ); ?>
 			<input type="number" name="tlm_order" id="tlm_order" value="0" step="1" />
 			<p class="description">
-				<?php esc_html_e( 'Locations are sorted by this number (lowest first) within the same level, then alphabetically.', 'tour-location-manager' ); ?>
+				<?php esc_html_e( 'Locations are sorted by this number (lowest first) within the same level, then alphabetically.', 'ints-tour-location-manager' ); ?>
 			</p>
 		</div>
 		<?php
@@ -192,11 +193,12 @@ class TLM_Taxonomy {
 		$value = ( '' === $value ) ? 0 : $value;
 		?>
 		<tr class="form-field term-order-wrap">
-			<th scope="row"><label for="tlm_order"><?php esc_html_e( 'Display Order', 'tour-location-manager' ); ?></label></th>
+			<th scope="row"><label for="tlm_order"><?php esc_html_e( 'Display Order', 'ints-tour-location-manager' ); ?></label></th>
 			<td>
+				<?php wp_nonce_field( 'tlm_save_term_meta', 'tlm_term_nonce' ); ?>
 				<input type="number" name="tlm_order" id="tlm_order" value="<?php echo esc_attr( $value ); ?>" step="1" />
 				<p class="description">
-					<?php esc_html_e( 'Locations are sorted by this number (lowest first) within the same level, then alphabetically.', 'tour-location-manager' ); ?>
+					<?php esc_html_e( 'Locations are sorted by this number (lowest first) within the same level, then alphabetically.', 'ints-tour-location-manager' ); ?>
 				</p>
 			</td>
 		</tr>
@@ -209,11 +211,12 @@ class TLM_Taxonomy {
 	 * @param int $term_id Term ID.
 	 */
 	public function save_order_field( $term_id ) {
-		// Verify nonce from the standard taxonomy add/edit forms.
-		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'add-tag' )
-			&& ! isset( $_POST['_wpnonce'] ) ) {
-			// Continue — WP core already validates nonces for term edit screens
-			// before firing these hooks, this is an extra defensive check only.
+		if ( ! isset( $_POST['tlm_term_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['tlm_term_nonce'] ) ), 'tlm_save_term_meta' ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_product_terms' ) && ! current_user_can( 'edit_terms' ) ) {
+			return;
 		}
 
 		if ( isset( $_POST['tlm_order'] ) ) {
@@ -248,12 +251,13 @@ class TLM_Taxonomy {
 	public function add_thumbnail_field() {
 		?>
 		<div class="form-field term-thumbnail-wrap">
-			<label><?php esc_html_e( 'Thumbnail', 'tour-location-manager' ); ?></label>
+			<label><?php esc_html_e( 'Thumbnail', 'ints-tour-location-manager' ); ?></label>
 			<div class="tlm-thumbnail-preview" id="tlm-thumbnail-preview"></div>
 			<input type="hidden" name="tlm_thumbnail_id" id="tlm_thumbnail_id" value="" />
-			<button type="button" class="button tlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'tour-location-manager' ); ?></button>
-			<button type="button" class="button tlm-remove-thumbnail" style="display:none;"><?php esc_html_e( 'Remove Image', 'tour-location-manager' ); ?></button>
-			<p class="description"><?php esc_html_e( 'Thumbnail image shown when displaying locations in a grid.', 'tour-location-manager' ); ?></p>
+			<?php wp_nonce_field( 'tlm_save_term_meta', 'tlm_term_nonce' ); ?>
+			<button type="button" class="button tlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'ints-tour-location-manager' ); ?></button>
+			<button type="button" class="button tlm-remove-thumbnail" style="display:none;"><?php esc_html_e( 'Remove Image', 'ints-tour-location-manager' ); ?></button>
+			<p class="description"><?php esc_html_e( 'Thumbnail image shown when displaying locations in a grid.', 'ints-tour-location-manager' ); ?></p>
 		</div>
 		<?php
 	}
@@ -268,7 +272,7 @@ class TLM_Taxonomy {
 		$image_src    = $thumbnail_id ? wp_get_attachment_image_url( $thumbnail_id, 'thumbnail' ) : '';
 		?>
 		<tr class="form-field term-thumbnail-wrap">
-			<th scope="row"><label><?php esc_html_e( 'Thumbnail', 'tour-location-manager' ); ?></label></th>
+			<th scope="row"><label><?php esc_html_e( 'Thumbnail', 'ints-tour-location-manager' ); ?></label></th>
 			<td>
 				<div class="tlm-thumbnail-preview" id="tlm-thumbnail-preview">
 					<?php if ( $image_src ) : ?>
@@ -276,9 +280,10 @@ class TLM_Taxonomy {
 					<?php endif; ?>
 				</div>
 				<input type="hidden" name="tlm_thumbnail_id" id="tlm_thumbnail_id" value="<?php echo esc_attr( $thumbnail_id ?: '' ); ?>" />
-				<button type="button" class="button tlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'tour-location-manager' ); ?></button>
-				<button type="button" class="button tlm-remove-thumbnail"<?php echo $thumbnail_id ? '' : ' style="display:none;"'; ?>><?php esc_html_e( 'Remove Image', 'tour-location-manager' ); ?></button>
-				<p class="description"><?php esc_html_e( 'Thumbnail image shown when displaying locations in a grid.', 'tour-location-manager' ); ?></p>
+				<?php wp_nonce_field( 'tlm_save_term_meta', 'tlm_term_nonce' ); ?>
+				<button type="button" class="button tlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'ints-tour-location-manager' ); ?></button>
+				<button type="button" class="button tlm-remove-thumbnail"<?php echo $thumbnail_id ? '' : ' style="display:none;"'; ?>><?php esc_html_e( 'Remove Image', 'ints-tour-location-manager' ); ?></button>
+				<p class="description"><?php esc_html_e( 'Thumbnail image shown when displaying locations in a grid.', 'ints-tour-location-manager' ); ?></p>
 			</td>
 		</tr>
 		<?php
@@ -290,6 +295,10 @@ class TLM_Taxonomy {
 	 * @param int $term_id Term ID.
 	 */
 	public function save_thumbnail_field( $term_id ) {
+		if ( ! isset( $_POST['tlm_term_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['tlm_term_nonce'] ) ), 'tlm_save_term_meta' ) ) {
+			return;
+		}
+
 		if ( ! isset( $_POST['tlm_thumbnail_id'] ) ) {
 			return;
 		}
@@ -316,7 +325,7 @@ class TLM_Taxonomy {
 		$new = array();
 		foreach ( $columns as $key => $label ) {
 			if ( 'name' === $key ) {
-				$new['tlm_thumbnail'] = __( 'Thumbnail', 'tour-location-manager' );
+				$new['tlm_thumbnail'] = __( 'Thumbnail', 'ints-tour-location-manager' );
 			}
 			$new[ $key ] = $label;
 		}
@@ -358,7 +367,7 @@ class TLM_Taxonomy {
 			$new_columns[ $key ] = $label;
 
 			if ( 'name' === $key ) {
-				$new_columns['tlm_level'] = __( 'Level', 'tour-location-manager' );
+				$new_columns['tlm_level'] = __( 'Level', 'ints-tour-location-manager' );
 			}
 		}
 
@@ -382,13 +391,13 @@ class TLM_Taxonomy {
 
 		switch ( $depth ) {
 			case 0:
-				return esc_html__( 'Country', 'tour-location-manager' );
+				return esc_html__( 'Country', 'ints-tour-location-manager' );
 			case 1:
-				return esc_html__( 'State/Province', 'tour-location-manager' );
+				return esc_html__( 'State/Province', 'ints-tour-location-manager' );
 			case 2:
-				return esc_html__( 'City', 'tour-location-manager' );
+				return esc_html__( 'City', 'ints-tour-location-manager' );
 			default:
-				return esc_html__( 'Sub-location', 'tour-location-manager' );
+				return esc_html__( 'Sub-location', 'ints-tour-location-manager' );
 		}
 	}
 }

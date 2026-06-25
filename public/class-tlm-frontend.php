@@ -143,7 +143,7 @@ class TLM_Frontend {
 
 			$label = sprintf(
 				/* translators: %s: location name */
-				__( '%s Tours & Services', 'tour-location-manager' ),
+				__( '%s Tours & Services', 'ints-tour-location-manager' ),
 				$queried->name
 			);
 
@@ -226,7 +226,7 @@ class TLM_Frontend {
 		$top_terms = $this->order_terms( $top_terms );
 
 		if ( empty( $top_terms ) ) {
-			return '<p class="tlm-empty">' . esc_html__( 'No locations have been added yet.', 'tour-location-manager' ) . '</p>';
+			return '<p class="tlm-empty">' . esc_html__( 'No locations have been added yet.', 'ints-tour-location-manager' ) . '</p>';
 		}
 
 		ob_start();
@@ -290,7 +290,7 @@ class TLM_Frontend {
 		$terms = get_terms( $query_args );
 
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
-			return '<p class="tlm-empty">' . esc_html__( 'No locations found.', 'tour-location-manager' ) . '</p>';
+			return '<p class="tlm-empty">' . esc_html__( 'No locations found.', 'ints-tour-location-manager' ) . '</p>';
 		}
 
 		$columns     = max( 1, min( 6, absint( $atts['columns'] ) ) );
@@ -321,7 +321,9 @@ class TLM_Frontend {
 				?>
 				<li <?php wc_product_cat_class( '', $term ); ?>>
 					<a href="<?php echo esc_url( get_term_link( $term ) ); ?>"
-					   aria-label="<?php echo esc_attr( sprintf( __( 'Visit location %s', 'tour-location-manager' ), $term->name ) ); ?>">
+					   aria-label="<?php
+					   /* translators: %s: location name */
+					   echo esc_attr( sprintf( __( 'Visit location %s', 'ints-tour-location-manager' ), $term->name ) ); ?>">
 						<span class="cat-image-wrapper">
 							<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- produced by WP/WC functions ?>
 						</span>
@@ -406,7 +408,7 @@ class TLM_Frontend {
 			if ( $has_children ) {
 				$html .= '<button type="button" class="tlm-toggle" aria-expanded="false" aria-label="' .
 					/* translators: %s: location name */
-					esc_attr( sprintf( __( 'Toggle %s', 'tour-location-manager' ), $term->name ) ) .
+					esc_attr( sprintf( __( 'Toggle %s', 'ints-tour-location-manager' ), $term->name ) ) .
 					'"><span aria-hidden="true">+</span></button>';
 			} else {
 				$html .= '<span class="tlm-toggle tlm-toggle-empty" aria-hidden="true"></span>';

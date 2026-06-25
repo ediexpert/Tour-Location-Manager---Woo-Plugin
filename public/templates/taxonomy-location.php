@@ -32,7 +32,7 @@ $queried_term = get_queried_object();
 				<?php
 				$breadcrumb = tlm_get_location_breadcrumb( $queried_term->term_id );
 				if ( $breadcrumb ) {
-					echo '<nav class="tlm-breadcrumb" aria-label="' . esc_attr__( 'Location breadcrumb', 'tour-location-manager' ) . '">';
+					echo '<nav class="tlm-breadcrumb" aria-label="' . esc_attr__( 'Location breadcrumb', 'ints-tour-location-manager' ) . '">';
 					echo wp_kses_post( $breadcrumb );
 					echo '</nav>';
 				}
@@ -42,7 +42,7 @@ $queried_term = get_queried_object();
 					<?php
 					printf(
 						/* translators: 1: level label (Country/State/City), 2: location name */
-						esc_html__( '%1$s: %2$s', 'tour-location-manager' ),
+						esc_html__( '%1$s: %2$s', 'ints-tour-location-manager' ),
 						esc_html( tlm_get_level_label( $queried_term->term_id ) ),
 						esc_html( $queried_term->name )
 					);
@@ -65,9 +65,9 @@ $queried_term = get_queried_object();
 					<h2>
 						<?php
 						if ( 0 === tlm_get_term_depth( $queried_term->term_id ) ) {
-							esc_html_e( 'States &amp; Provinces', 'tour-location-manager' );
+							esc_html_e( 'States &amp; Provinces', 'ints-tour-location-manager' );
 						} else {
-							esc_html_e( 'Cities', 'tour-location-manager' );
+							esc_html_e( 'Cities', 'ints-tour-location-manager' );
 						}
 						?>
 					</h2>
@@ -89,7 +89,7 @@ $queried_term = get_queried_object();
 					<?php
 					printf(
 						/* translators: %s: location name */
-						esc_html__( 'Tours &amp; Services in %s', 'tour-location-manager' ),
+						esc_html__( 'Tours &amp; Services in %s', 'ints-tour-location-manager' ),
 						esc_html( $queried_term->name )
 					);
 					?>
@@ -115,8 +115,8 @@ $queried_term = get_queried_object();
 								'format'    => '?paged=%#%',
 								'current'   => max( 1, get_query_var( 'paged' ) ),
 								'total'     => $products_query->max_num_pages,
-								'prev_text' => __( '&larr; Previous', 'tour-location-manager' ),
-								'next_text' => __( 'Next &rarr;', 'tour-location-manager' ),
+								'prev_text' => __( '&larr; Previous', 'ints-tour-location-manager' ),
+								'next_text' => __( 'Next &rarr;', 'ints-tour-location-manager' ),
 							)
 						)
 					);
@@ -124,7 +124,7 @@ $queried_term = get_queried_object();
 
 				<?php else : ?>
 					<p class="tlm-no-products">
-						<?php esc_html_e( 'No tours or services are currently available for this location.', 'tour-location-manager' ); ?>
+						<?php esc_html_e( 'No tours or services are currently available for this location.', 'ints-tour-location-manager' ); ?>
 					</p>
 				<?php endif; ?>
 
@@ -132,7 +132,7 @@ $queried_term = get_queried_object();
 			</section>
 
 		<?php else : ?>
-			<p><?php esc_html_e( 'Location not found.', 'tour-location-manager' ); ?></p>
+			<p><?php esc_html_e( 'Location not found.', 'ints-tour-location-manager' ); ?></p>
 		<?php endif; ?>
 
 	</main>

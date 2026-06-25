@@ -86,11 +86,12 @@ class TLM_Admin_Product {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET param; sets dropdown selected state. No data is modified.
 		$selected = isset( $_GET[ TLM_TAXONOMY ] ) ? sanitize_title( wp_unslash( $_GET[ TLM_TAXONOMY ] ) ) : '';
 
 		wp_dropdown_categories(
 			array(
-				'show_option_all' => __( 'All Locations', 'tour-location-manager' ),
+				'show_option_all' => __( 'All Locations', 'ints-tour-location-manager' ),
 				'taxonomy'        => TLM_TAXONOMY,
 				'name'            => TLM_TAXONOMY,
 				'orderby'         => 'name',
@@ -116,10 +117,12 @@ class TLM_Admin_Product {
 			return $query;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET filter on admin list table; same pattern used by WP core and WooCommerce.
 		if ( empty( $_GET[ TLM_TAXONOMY ] ) ) {
 			return $query;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; see comment above.
 		$slug = sanitize_title( wp_unslash( $_GET[ TLM_TAXONOMY ] ) );
 
 		if ( '' === $slug ) {
@@ -151,12 +154,12 @@ class TLM_Admin_Product {
 
 			// Insert after the product "Categories"/"Tags" columns if present, else after "name".
 			if ( 'product_tag' === $key || 'name' === $key ) {
-				$new_columns['tlm_location'] = __( 'Locations', 'tour-location-manager' );
+				$new_columns['tlm_location'] = __( 'Locations', 'ints-tour-location-manager' );
 			}
 		}
 
 		if ( ! isset( $new_columns['tlm_location'] ) ) {
-			$new_columns['tlm_location'] = __( 'Locations', 'tour-location-manager' );
+			$new_columns['tlm_location'] = __( 'Locations', 'ints-tour-location-manager' );
 		}
 
 		return $new_columns;
