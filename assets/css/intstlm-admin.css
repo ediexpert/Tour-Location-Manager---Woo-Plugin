@@ -6,16 +6,16 @@
 	width: 6em;
 }
 
-.column-tlm_location,
-.column-tlm_level {
+.column-intstlm_location,
+.column-intstlm_level {
 	width: 14%;
 }
 
-.column-tlm_thumbnail {
+.column-intstlm_thumbnail {
 	width: 52px;
 }
 
-.tlm-thumbnail-preview img {
+.intstlm-thumbnail-preview img {
 	max-width: 150px;
 	display: block;
 	margin-bottom: 6px;

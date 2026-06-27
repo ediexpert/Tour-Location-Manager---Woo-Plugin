@@ -5,8 +5,8 @@
  * These functions are intentionally procedural (not class methods) so
  * theme developers can call them easily from template files, e.g.:
  *
- *   if ( function_exists( 'tlm_get_location_breadcrumb' ) ) {
- *       echo tlm_get_location_breadcrumb();
+ *   if ( function_exists( 'intstlm_get_location_breadcrumb' ) ) {
+ *       echo intstlm_get_location_breadcrumb();
  *   }
  *
  * @package Tour_Location_Manager
@@ -22,16 +22,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param int $term_id Term ID.
  * @return int Depth, 0-indexed.
  */
-function tlm_get_term_depth( $term_id ) {
+function intstlm_get_term_depth( $term_id ) {
 	$depth   = 0;
 	$term_id = (int) $term_id;
 	$guard   = 0; // Prevent infinite loops on corrupted data.
 
-	$term = get_term( $term_id, TLM_TAXONOMY );
+	$term = get_term( $term_id, INTSTLM_TAXONOMY );
 
 	while ( $term && ! is_wp_error( $term ) && $term->parent && $guard < 20 ) {
 		$depth++;
-		$term = get_term( $term->parent, TLM_TAXONOMY );
+		$term = get_term( $term->parent, INTSTLM_TAXONOMY );
 		$guard++;
 	}
 
@@ -44,8 +44,8 @@ function tlm_get_term_depth( $term_id ) {
  * @param int $term_id Term ID.
  * @return string
  */
-function tlm_get_level_label( $term_id ) {
-	switch ( tlm_get_term_depth( $term_id ) ) {
+function intstlm_get_level_label( $term_id ) {
+	switch ( intstlm_get_term_depth( $term_id ) ) {
 		case 0:
 			return __( 'Country', 'ints-tour-location-manager' );
 		case 1:
@@ -64,10 +64,10 @@ function tlm_get_level_label( $term_id ) {
  * @param bool $hide_empty   Whether to hide terms with no products.
  * @return WP_Term[]
  */
-function tlm_get_child_locations( $parent_id = 0, $hide_empty = false ) {
+function intstlm_get_child_locations( $parent_id = 0, $hide_empty = false ) {
 	$terms = get_terms(
 		array(
-			'taxonomy'   => TLM_TAXONOMY,
+			'taxonomy'   => INTSTLM_TAXONOMY,
 			'parent'     => (int) $parent_id,
 			'hide_empty' => (bool) $hide_empty,
 		)
@@ -87,13 +87,13 @@ function tlm_get_child_locations( $parent_id = 0, $hide_empty = false ) {
  * @param int $term_id Term ID.
  * @return WP_Term[]
  */
-function tlm_get_location_ancestors( $term_id ) {
-	$ancestor_ids = get_ancestors( $term_id, TLM_TAXONOMY, 'taxonomy' );
+function intstlm_get_location_ancestors( $term_id ) {
+	$ancestor_ids = get_ancestors( $term_id, INTSTLM_TAXONOMY, 'taxonomy' );
 	$ancestor_ids = array_reverse( $ancestor_ids ); // get_ancestors() returns closest-first.
 
 	$terms = array();
 	foreach ( $ancestor_ids as $ancestor_id ) {
-		$term = get_term( $ancestor_id, TLM_TAXONOMY );
+		$term = get_term( $ancestor_id, INTSTLM_TAXONOMY );
 		if ( $term && ! is_wp_error( $term ) ) {
 			$terms[] = $term;
 		}
@@ -110,10 +110,10 @@ function tlm_get_location_ancestors( $term_id ) {
  * @param string   $sep     Separator between items.
  * @return string HTML breadcrumb (escaped).
  */
-function tlm_get_location_breadcrumb( $term_id = null, $sep = ' &raquo; ' ) {
+function intstlm_get_location_breadcrumb( $term_id = null, $sep = ' &raquo; ' ) {
 	if ( null === $term_id ) {
 		$queried = get_queried_object();
-		if ( $queried instanceof WP_Term && TLM_TAXONOMY === $queried->taxonomy ) {
+		if ( $queried instanceof WP_Term && INTSTLM_TAXONOMY === $queried->taxonomy ) {
 			$term_id = $queried->term_id;
 		}
 	}
@@ -122,8 +122,8 @@ function tlm_get_location_breadcrumb( $term_id = null, $sep = ' &raquo; ' ) {
 		return '';
 	}
 
-	$ancestors = tlm_get_location_ancestors( $term_id );
-	$current   = get_term( $term_id, TLM_TAXONOMY );
+	$ancestors = intstlm_get_location_ancestors( $term_id );
+	$current   = get_term( $term_id, INTSTLM_TAXONOMY );
 
 	if ( ! $current || is_wp_error( $current ) ) {
 		return '';
@@ -140,7 +140,7 @@ function tlm_get_location_breadcrumb( $term_id = null, $sep = ' &raquo; ' ) {
 	}
 
 	// Current term is plain text (not linked) — standard breadcrumb pattern.
-	$links[] = '<span class="tlm-breadcrumb-current">' . esc_html( $current->name ) . '</span>';
+	$links[] = '<span class="intstlm-breadcrumb-current">' . esc_html( $current->name ) . '</span>';
 
 	return implode( esc_html( $sep ), $links );
 }
@@ -155,11 +155,11 @@ function tlm_get_location_breadcrumb( $term_id = null, $sep = ' &raquo; ' ) {
  * @param array $args             Additional WP_Query args to merge/override.
  * @return WP_Query
  */
-function tlm_get_products_for_location( $term_id, $include_children = false, $args = array() ) {
+function intstlm_get_products_for_location( $term_id, $include_children = false, $args = array() ) {
 	$term_ids = array( (int) $term_id );
 
 	if ( $include_children ) {
-		$children = get_term_children( (int) $term_id, TLM_TAXONOMY );
+		$children = get_term_children( (int) $term_id, INTSTLM_TAXONOMY );
 		if ( ! is_wp_error( $children ) ) {
 			$term_ids = array_merge( $term_ids, array_map( 'intval', $children ) );
 		}
@@ -172,7 +172,7 @@ function tlm_get_products_for_location( $term_id, $include_children = false, $ar
 		'paged'          => max( 1, get_query_var( 'paged' ) ),
 		'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			array(
-				'taxonomy' => TLM_TAXONOMY,
+				'taxonomy' => INTSTLM_TAXONOMY,
 				'field'    => 'term_id',
 				'terms'    => $term_ids,
 			),
@@ -190,8 +190,8 @@ function tlm_get_products_for_location( $term_id, $include_children = false, $ar
  * @param int $product_id Product ID.
  * @return WP_Term[]
  */
-function tlm_get_product_locations( $product_id ) {
-	$terms = get_the_terms( $product_id, TLM_TAXONOMY );
+function intstlm_get_product_locations( $product_id ) {
+	$terms = get_the_terms( $product_id, INTSTLM_TAXONOMY );
 
 	if ( empty( $terms ) || is_wp_error( $terms ) ) {
 		return array();
@@ -205,8 +205,8 @@ function tlm_get_product_locations( $product_id ) {
  *
  * @param array $atts Shortcode-style attributes (parent, depth, show_counts).
  */
-function tlm_the_location_menu( $atts = array() ) {
-	echo do_shortcode( '[tour_location_menu' . tlm_build_atts_string( $atts ) . ']' );
+function intstlm_the_location_menu( $atts = array() ) {
+	echo do_shortcode( '[intstlm_tour_location_menu' . intstlm_build_atts_string( $atts ) . ']' );
 }
 
 /**
@@ -215,7 +215,7 @@ function tlm_the_location_menu( $atts = array() ) {
  * @param array $atts Attributes.
  * @return string
  */
-function tlm_build_atts_string( $atts ) {
+function intstlm_build_atts_string( $atts ) {
 	$out = '';
 	foreach ( $atts as $key => $value ) {
 		$out .= sprintf( ' %s="%s"', sanitize_key( $key ), esc_attr( $value ) );

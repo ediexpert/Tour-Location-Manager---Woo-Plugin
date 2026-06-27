@@ -22,8 +22,8 @@ Organise your tours, activities, and services by **Country → State/Province �
 
 * **Hierarchical Location taxonomy** (Country > State/Province > City) attached to WooCommerce products.
 * **Location thumbnails** — upload a thumbnail image per location via the media library (same as WooCommerce product categories).
-* **`[tour_locations]` shortcode** — displays a WooCommerce-compatible thumbnail grid (same markup and styling as `[product_categories]`).
-* **`[tour_location_menu]` shortcode** — renders a collapsible Country > State > City navigation tree.
+* **`[intstlm_tour_locations]` shortcode** — displays a WooCommerce-compatible thumbnail grid (same markup and styling as `[product_categories]`).
+* **`[intstlm_tour_location_menu]` shortcode** — renders a collapsible Country > State > City navigation tree.
 * **SEO-friendly archive URLs**, e.g. `example.com/location/usa/california/los-angeles/`
 * **Custom archive template** — country/state pages show child locations + products; city pages show products only. Theme-overridable.
 * **Admin product list integration** — Locations column and filter dropdown on the Products list table.
@@ -36,13 +36,13 @@ Organise your tours, activities, and services by **Country → State/Province �
 
 **Location grid (like WooCommerce categories):**
 
-`[tour_locations ids="1,2,3" orderby="include" columns="4" show_counts="yes"]`
+`[intstlm_tour_locations ids="1,2,3" orderby="include" columns="4" show_counts="yes"]`
 
 Attributes: `ids`, `orderby` (name/count/slug/id/include), `order` (ASC/DESC), `columns` (1–6), `hide_empty` (0/1), `parent`, `show_counts` (yes/no).
 
 **Location navigation tree:**
 
-`[tour_location_menu parent="0" depth="3" show_counts="yes" expand_all="no"]`
+`[intstlm_tour_location_menu parent="0" depth="3" show_counts="yes" expand_all="no"]`
 
 = Requirements =
 
@@ -52,9 +52,9 @@ Attributes: `ids`, `orderby` (name/count/slug/id/include), `order` (ASC/DESC), `
 
 = Developer-Friendly =
 
-* Filter taxonomy registration args via `tlm_taxonomy_args`.
+* Filter taxonomy registration args via `intstlm_taxonomy_args`.
 * Override the archive template by placing `taxonomy-location.php` in your theme.
-* Helper functions: `tlm_get_term_depth()`, `tlm_get_location_ancestors()`, `tlm_get_location_breadcrumb()`, `tlm_get_products_for_location()`, and more.
+* Helper functions: `intstlm_get_term_depth()`, `intstlm_get_location_ancestors()`, `intstlm_get_location_breadcrumb()`, `intstlm_get_products_for_location()`, and more.
 
 == Installation ==
 
@@ -76,15 +76,15 @@ Go to **Products → Locations**, edit any location, and use the **Thumbnail** f
 
 = How do I display locations as a grid like WooCommerce categories? =
 
-Use the `[tour_locations]` shortcode. It uses identical HTML markup and CSS classes to WooCommerce's `[product_categories]`, so it will be styled automatically by any WooCommerce-compatible theme including Shoptimizer, Flatsome, OceanWP, and Storefront.
+Use the `[intstlm_tour_locations]` shortcode. It uses identical HTML markup and CSS classes to WooCommerce's `[product_categories]`, so it will be styled automatically by any WooCommerce-compatible theme including Shoptimizer, Flatsome, OceanWP, and Storefront.
 
 = How do I control the number of columns? =
 
-Use the `columns` attribute: `[tour_locations columns="4"]`. Supports 1–6 columns.
+Use the `columns` attribute: `[intstlm_tour_locations columns="4"]`. Supports 1–6 columns.
 
 = Can I display specific locations by ID? =
 
-Yes: `[tour_locations ids="12,15,18" orderby="include"]` — the `orderby="include"` preserves the order of your IDs.
+Yes: `[intstlm_tour_locations ids="12,15,18" orderby="include"]` — the `orderby="include"` preserves the order of your IDs.
 
 = Can I override the archive template in my theme? =
 
@@ -102,8 +102,8 @@ Yes. The plugin declares full compatibility with WooCommerce High Performance Or
 
 1. Products → Locations admin screen showing the hierarchical location tree with Level and Thumbnail columns.
 2. Edit Location screen with the Thumbnail upload field and Display Order field.
-3. `[tour_locations]` shortcode rendered as a 4-column thumbnail grid on the frontend.
-4. `[tour_location_menu]` shortcode rendered as a collapsible Country > State > City navigation tree.
+3. `[intstlm_tour_locations]` shortcode rendered as a 4-column thumbnail grid on the frontend.
+4. `[intstlm_tour_location_menu]` shortcode rendered as a collapsible Country > State > City navigation tree.
 5. Location archive page showing child locations and matching WooCommerce products.
 6. Product edit screen with the Locations meta box (Country/State/City checkboxes).
 7. Plugin settings page under Products → Location Settings.
@@ -114,8 +114,8 @@ Yes. The plugin declares full compatibility with WooCommerce High Performance Or
 * Initial release.
 * Hierarchical Location taxonomy (Country > State/Province > City).
 * Location thumbnail upload support (media library).
-* `[tour_locations]` grid shortcode (WooCommerce-compatible markup).
-* `[tour_location_menu]` collapsible tree shortcode.
+* `[intstlm_tour_locations]` grid shortcode (WooCommerce-compatible markup).
+* `[intstlm_tour_location_menu]` collapsible tree shortcode.
 * SEO-friendly hierarchical archive URLs.
 * Custom archive template with theme-override support.
 * Admin product list integration (Locations column and filter dropdown).

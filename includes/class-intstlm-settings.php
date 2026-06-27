@@ -4,7 +4,7 @@
  *
  * Provides options for the taxonomy slug, archive base, menu title,
  * and other display preferences. Stored as a single array option
- * "tlm_settings".
+ * "intstlm_settings".
  *
  * @package Tour_Location_Manager
  */
@@ -13,12 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class TLM_Settings {
+class INTSTLM_Settings {
 
 	/**
 	 * Singleton instance.
 	 *
-	 * @var TLM_Settings|null
+	 * @var INTSTLM_Settings|null
 	 */
 	private static $instance = null;
 
@@ -27,12 +27,12 @@ class TLM_Settings {
 	 *
 	 * @var string
 	 */
-	const OPTION_NAME = 'tlm_settings';
+	const OPTION_NAME = 'intstlm_settings';
 
 	/**
 	 * Get singleton instance.
 	 *
-	 * @return TLM_Settings
+	 * @return INTSTLM_Settings
 	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -90,7 +90,7 @@ class TLM_Settings {
 			__( 'Location Manager Settings', 'ints-tour-location-manager' ),
 			__( 'Location Settings', 'ints-tour-location-manager' ),
 			'manage_woocommerce',
-			'tlm-settings',
+			'intstlm-settings',
 			array( $this, 'render_settings_page' )
 		);
 	}
@@ -100,7 +100,7 @@ class TLM_Settings {
 	 */
 	public function register_settings() {
 		register_setting(
-			'tlm_settings_group',
+			'intstlm_settings_group',
 			self::OPTION_NAME,
 			array(
 				'sanitize_callback' => array( $this, 'sanitize_settings' ),
@@ -108,58 +108,58 @@ class TLM_Settings {
 		);
 
 		add_settings_section(
-			'tlm_general_section',
+			'intstlm_general_section',
 			__( 'General Settings', 'ints-tour-location-manager' ),
 			'__return_false',
-			'tlm-settings'
+			'intstlm-settings'
 		);
 
 		add_settings_field(
 			'taxonomy_slug',
 			__( 'Taxonomy Slug', 'ints-tour-location-manager' ),
 			array( $this, 'field_taxonomy_slug' ),
-			'tlm-settings',
-			'tlm_general_section'
+			'intstlm-settings',
+			'intstlm_general_section'
 		);
 
 		add_settings_field(
 			'archive_base',
 			__( 'Archive URL Base', 'ints-tour-location-manager' ),
 			array( $this, 'field_archive_base' ),
-			'tlm-settings',
-			'tlm_general_section'
+			'intstlm-settings',
+			'intstlm_general_section'
 		);
 
 		add_settings_field(
 			'menu_title',
 			__( 'Frontend Menu Title', 'ints-tour-location-manager' ),
 			array( $this, 'field_menu_title' ),
-			'tlm-settings',
-			'tlm_general_section'
+			'intstlm-settings',
+			'intstlm_general_section'
 		);
 
 		add_settings_field(
 			'breadcrumb_label',
 			__( 'Tree Heading Label', 'ints-tour-location-manager' ),
 			array( $this, 'field_breadcrumb_label' ),
-			'tlm-settings',
-			'tlm_general_section'
+			'intstlm-settings',
+			'intstlm_general_section'
 		);
 
 		add_settings_field(
 			'show_counts',
 			__( 'Show Product Counts', 'ints-tour-location-manager' ),
 			array( $this, 'field_show_counts' ),
-			'tlm-settings',
-			'tlm_general_section'
+			'intstlm-settings',
+			'intstlm_general_section'
 		);
 
 		add_settings_field(
 			'expand_all',
 			__( 'Expand Tree by Default', 'ints-tour-location-manager' ),
 			array( $this, 'field_expand_all' ),
-			'tlm-settings',
-			'tlm_general_section'
+			'intstlm-settings',
+			'intstlm_general_section'
 		);
 	}
 
@@ -291,8 +291,8 @@ class TLM_Settings {
 			<h1><?php esc_html_e( 'Tour Location Manager Settings', 'ints-tour-location-manager' ); ?></h1>
 			<form action="options.php" method="post">
 				<?php
-				settings_fields( 'tlm_settings_group' );
-				do_settings_sections( 'tlm-settings' );
+				settings_fields( 'intstlm_settings_group' );
+				do_settings_sections( 'intstlm-settings' );
 				submit_button();
 				?>
 			</form>
@@ -307,7 +307,7 @@ class TLM_Settings {
 				printf(
 					/* translators: %s: shortcode tag */
 					esc_html__( 'Use %s anywhere (pages, posts, widgets) to display the full collapsible location tree.', 'ints-tour-location-manager' ),
-					'<code>[tour_location_menu]</code>'
+					'<code>[intstlm_tour_location_menu]</code>'
 				);
 				?>
 			</p>
@@ -323,7 +323,7 @@ class TLM_Settings {
 				printf(
 					/* translators: %s: shortcode tag */
 					esc_html__( 'Use %s to display locations as a thumbnail grid — identical markup to WooCommerce\'s [product_categories] shortcode.', 'ints-tour-location-manager' ),
-					'<code>[tour_locations]</code>'
+					'<code>[intstlm_tour_locations]</code>'
 				);
 				?>
 			</p>
@@ -336,7 +336,7 @@ class TLM_Settings {
 				<li><code>parent="0"</code> — <?php esc_html_e( 'Show only direct children of this term ID.', 'ints-tour-location-manager' ); ?></li>
 				<li><code>show_counts="yes"</code> — <?php esc_html_e( 'Show product count badge.', 'ints-tour-location-manager' ); ?></li>
 			</ul>
-			<p><em><?php esc_html_e( 'Example:', 'ints-tour-location-manager' ); ?></em> <code>[tour_locations ids="5,6,7,8" orderby="include" columns="4" show_counts="yes"]</code></p>
+			<p><em><?php esc_html_e( 'Example:', 'ints-tour-location-manager' ); ?></em> <code>[intstlm_tour_locations ids="5,6,7,8" orderby="include" columns="4" show_counts="yes"]</code></p>
 		</div>
 		<?php
 	}

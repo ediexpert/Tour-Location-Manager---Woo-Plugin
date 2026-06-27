@@ -2,35 +2,35 @@
  * Tour Location Manager — Frontend Styles
  */
 
-.tlm-location-menu {
+.intstlm-location-menu {
 	margin: 1em 0;
 }
 
-.tlm-location-menu-title {
+.intstlm-location-menu-title {
 	margin-bottom: 0.5em;
 }
 
-.tlm-location-list {
+.intstlm-location-list {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
 
-.tlm-location-list.tlm-level-1 {
+.intstlm-location-list.intstlm-level-1 {
 	border-top: 1px solid #e2e2e2;
 }
 
-.tlm-location-item {
+.intstlm-location-item {
 	border-bottom: 1px solid #e2e2e2;
 }
 
-.tlm-location-row {
+.intstlm-location-row {
 	display: flex;
 	align-items: center;
 	padding: 0.4em 0;
 }
 
-.tlm-toggle {
+.intstlm-toggle {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -47,7 +47,7 @@
 	padding: 0;
 }
 
-.tlm-toggle-empty {
+.intstlm-toggle-empty {
 	width: 1.5em;
 	height: 1.5em;
 	margin-right: 0.5em;
@@ -55,59 +55,59 @@
 	background: transparent;
 }
 
-.tlm-location-link {
+.intstlm-location-link {
 	text-decoration: none;
 	font-weight: 500;
 }
 
-.tlm-location-link:hover {
+.intstlm-location-link:hover {
 	text-decoration: underline;
 }
 
-.tlm-count {
+.intstlm-count {
 	margin-left: 0.4em;
 	color: #777;
 	font-size: 0.9em;
 }
 
-.tlm-location-children {
+.intstlm-location-children {
 	display: none;
 	margin-left: 1.75em;
 }
 
-/* Expanded state (toggled via JS, or forced via .tlm-expanded) */
-.tlm-location-item.tlm-expanded > .tlm-location-children,
-.tlm-location-menu.tlm-expanded .tlm-location-children {
+/* Expanded state (toggled via JS, or forced via .intstlm-expanded) */
+.intstlm-location-item.intstlm-expanded > .intstlm-location-children,
+.intstlm-location-menu.intstlm-expanded .intstlm-location-children {
 	display: block;
 }
 
-.tlm-location-item.tlm-expanded > .tlm-location-row .tlm-toggle span::before {
+.intstlm-location-item.intstlm-expanded > .intstlm-location-row .intstlm-toggle span::before {
 	content: "\2212"; /* minus sign */
 }
 
 /* Breadcrumb */
-.tlm-breadcrumb {
+.intstlm-breadcrumb {
 	margin-bottom: 0.75em;
 	font-size: 0.9em;
 	color: #666;
 }
 
-.tlm-breadcrumb a {
+.intstlm-breadcrumb a {
 	text-decoration: none;
 }
 
-.tlm-breadcrumb a:hover {
+.intstlm-breadcrumb a:hover {
 	text-decoration: underline;
 }
 
-.tlm-breadcrumb-current {
+.intstlm-breadcrumb-current {
 	font-weight: 600;
 	color: #333;
 }
 
 /* Empty state */
-.tlm-empty,
-.tlm-no-products {
+.intstlm-empty,
+.intstlm-no-products {
 	color: #777;
 }
 
@@ -119,7 +119,7 @@
    respected without touching any other product grid on the page.
    ========================================================= */
 
-.tlm-locations-grid ul.products {
+.intstlm-locations-grid ul.products {
 	display: grid !important;
 	grid-template-columns: repeat( var( --wc-columns, 3 ), 1fr ) !important;
 	gap: 1.5em !important;
@@ -127,7 +127,7 @@
 	margin-left: 0 !important;
 }
 
-.tlm-locations-grid ul.products li.product {
+.intstlm-locations-grid ul.products li.product {
 	/* Let CSS Grid control sizing; reset anything the theme forces */
 	width: auto !important;
 	margin: 0 !important;
@@ -136,13 +136,13 @@
 }
 
 @media ( max-width: 768px ) {
-	.tlm-locations-grid ul.products {
+	.intstlm-locations-grid ul.products {
 		grid-template-columns: repeat( 2, 1fr ) !important;
 	}
 }
 
 @media ( max-width: 480px ) {
-	.tlm-locations-grid ul.products {
+	.intstlm-locations-grid ul.products {
 		grid-template-columns: 1fr !important;
 	}
 }

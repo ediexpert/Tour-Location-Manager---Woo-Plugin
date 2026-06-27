@@ -21,7 +21,7 @@
 					return;
 				}
 
-				var expanded = item.classList.toggle( 'tlm-expanded' );
+				var expanded = item.classList.toggle( 'intstlm-expanded' );
 				toggle.setAttribute( 'aria-expanded', expanded ? 'true' : 'false' );
 				toggle.querySelector( 'span' ).textContent = expanded ? '\u2212' : '+';
 			} );

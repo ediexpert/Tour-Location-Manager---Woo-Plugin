@@ -14,7 +14,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-delete_option( 'tlm_settings' );
+delete_option( 'intstlm_settings' );
 
 /*
  * Optional: fully remove all "location" terms and their meta.
@@ -22,14 +22,14 @@ delete_option( 'tlm_settings' );
  *
  * $terms = get_terms(
  *     array(
- *         'taxonomy'   => 'location',
+ *         'taxonomy'   => 'intstlm_location',
  *         'hide_empty' => false,
  *     )
  * );
  *
  * if ( ! is_wp_error( $terms ) ) {
  *     foreach ( $terms as $term ) {
- *         wp_delete_term( $term->term_id, 'location' );
+ *         wp_delete_term( $term->term_id, 'intstlm_location' );
  *     }
  * }
  */

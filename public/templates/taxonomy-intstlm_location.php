@@ -8,7 +8,7 @@
  * - City (no children): shows only the products assigned to that city.
  *
  * Theme developers can override this entirely by adding a
- * taxonomy-location.php file to their theme.
+ * taxonomy-intstlm_location.php file to their theme.
  *
  * @package Tour_Location_Manager
  */
@@ -19,21 +19,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 
-$queried_term = get_queried_object();
+$intstlm_queried_term = get_queried_object();
 ?>
 
-<div id="primary" class="content-area tlm-archive-content">
+<div id="primary" class="content-area intstlm-archive-content">
 	<main id="main" class="site-main">
 
-		<?php if ( $queried_term instanceof WP_Term ) : ?>
+		<?php if ( $intstlm_queried_term instanceof WP_Term ) : ?>
 
-			<header class="tlm-archive-header page-header">
+			<header class="intstlm-archive-header page-header">
 
 				<?php
-				$breadcrumb = tlm_get_location_breadcrumb( $queried_term->term_id );
-				if ( $breadcrumb ) {
-					echo '<nav class="tlm-breadcrumb" aria-label="' . esc_attr__( 'Location breadcrumb', 'ints-tour-location-manager' ) . '">';
-					echo wp_kses_post( $breadcrumb );
+				$intstlm_breadcrumb = intstlm_get_location_breadcrumb( $intstlm_queried_term->term_id );
+				if ( $intstlm_breadcrumb ) {
+					echo '<nav class="intstlm-breadcrumb" aria-label="' . esc_attr__( 'Location breadcrumb', 'ints-tour-location-manager' ) . '">';
+					echo wp_kses_post( $intstlm_breadcrumb );
 					echo '</nav>';
 				}
 				?>
@@ -43,46 +43,46 @@ $queried_term = get_queried_object();
 					printf(
 						/* translators: 1: level label (Country/State/City), 2: location name */
 						esc_html__( '%1$s: %2$s', 'ints-tour-location-manager' ),
-						esc_html( tlm_get_level_label( $queried_term->term_id ) ),
-						esc_html( $queried_term->name )
+						esc_html( intstlm_get_level_label( $intstlm_queried_term->term_id ) ),
+						esc_html( $intstlm_queried_term->name )
 					);
 					?>
 				</h1>
 
-				<?php if ( ! empty( $queried_term->description ) ) : ?>
+				<?php if ( ! empty( $intstlm_queried_term->description ) ) : ?>
 					<div class="taxonomy-description">
-						<?php echo wp_kses_post( wpautop( $queried_term->description ) ); ?>
+						<?php echo wp_kses_post( wpautop( $intstlm_queried_term->description ) ); ?>
 					</div>
 				<?php endif; ?>
 			</header>
 
 			<?php
-			$children = tlm_get_child_locations( $queried_term->term_id, false );
+			$intstlm_children = intstlm_get_child_locations( $intstlm_queried_term->term_id, false );
 			?>
 
-			<?php if ( ! empty( $children ) ) : ?>
-				<section class="tlm-sub-locations">
+			<?php if ( ! empty( $intstlm_children ) ) : ?>
+				<section class="intstlm-sub-locations">
 					<h2>
 						<?php
-						if ( 0 === tlm_get_term_depth( $queried_term->term_id ) ) {
+						if ( 0 === intstlm_get_term_depth( $intstlm_queried_term->term_id ) ) {
 							esc_html_e( 'States &amp; Provinces', 'ints-tour-location-manager' );
 						} else {
 							esc_html_e( 'Cities', 'ints-tour-location-manager' );
 						}
 						?>
 					</h2>
-					<?php echo do_shortcode( '[tour_location_menu parent="' . absint( $queried_term->term_id ) . '"]' ); ?>
+					<?php echo do_shortcode( '[intstlm_tour_location_menu parent="' . absint( $intstlm_queried_term->term_id ) . '"]' ); ?>
 				</section>
 			<?php endif; ?>
 
-			<section class="tlm-location-products">
+			<section class="intstlm-location-products">
 
 				<?php
 				// On Country/State pages, optionally include products tagged to
 				// child locations as well, so e.g. "Germany" can show Munich tours too.
-				$include_children = ( ! empty( $children ) );
+				$intstlm_include_children = ( ! empty( $intstlm_children ) );
 
-				$products_query = tlm_get_products_for_location( $queried_term->term_id, $include_children );
+				$intstlm_products_query = intstlm_get_products_for_location( $intstlm_queried_term->term_id, $intstlm_include_children );
 				?>
 
 				<h2>
@@ -90,31 +90,31 @@ $queried_term = get_queried_object();
 					printf(
 						/* translators: %s: location name */
 						esc_html__( 'Tours &amp; Services in %s', 'ints-tour-location-manager' ),
-						esc_html( $queried_term->name )
+						esc_html( $intstlm_queried_term->name )
 					);
 					?>
 				</h2>
 
-				<?php if ( $products_query->have_posts() ) : ?>
+				<?php if ( $intstlm_products_query->have_posts() ) : ?>
 
-					<ul class="products tlm-products columns-3">
+					<ul class="products intstlm-products columns-3">
 						<?php
-						while ( $products_query->have_posts() ) :
-							$products_query->the_post();
+						while ( $intstlm_products_query->have_posts() ) :
+							$intstlm_products_query->the_post();
 							wc_get_template_part( 'content', 'product' );
 						endwhile;
 						?>
 					</ul>
 
 					<?php
-					$big = 999999999;
+					$intstlm_big = 999999999;
 					echo wp_kses_post(
 						paginate_links(
 							array(
-								'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+								'base'      => str_replace( $intstlm_big, '%#%', esc_url( get_pagenum_link( $intstlm_big ) ) ),
 								'format'    => '?paged=%#%',
 								'current'   => max( 1, get_query_var( 'paged' ) ),
-								'total'     => $products_query->max_num_pages,
+								'total'     => $intstlm_products_query->max_num_pages,
 								'prev_text' => __( '&larr; Previous', 'ints-tour-location-manager' ),
 								'next_text' => __( 'Next &rarr;', 'ints-tour-location-manager' ),
 							)
@@ -123,7 +123,7 @@ $queried_term = get_queried_object();
 					?>
 
 				<?php else : ?>
-					<p class="tlm-no-products">
+					<p class="intstlm-no-products">
 						<?php esc_html_e( 'No tours or services are currently available for this location.', 'ints-tour-location-manager' ); ?>
 					</p>
 				<?php endif; ?>

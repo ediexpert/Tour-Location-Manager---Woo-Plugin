@@ -16,19 +16,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class TLM_Admin_Product {
+class INTSTLM_Admin_Product {
 
 	/**
 	 * Singleton instance.
 	 *
-	 * @var TLM_Admin_Product|null
+	 * @var INTSTLM_Admin_Product|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get singleton instance.
 	 *
-	 * @return TLM_Admin_Product
+	 * @return INTSTLM_Admin_Product
 	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -67,10 +67,10 @@ class TLM_Admin_Product {
 
 		if ( in_array( $hook, array( 'post.php', 'post-new.php', 'edit.php' ), true ) ) {
 			wp_enqueue_style(
-				'tlm-admin',
-				TLM_PLUGIN_URL . 'assets/css/tlm-admin.css',
+				'intstlm-admin',
+				INTSTLM_PLUGIN_URL . 'assets/css/intstlm-admin.css',
 				array(),
-				TLM_VERSION
+				INTSTLM_VERSION
 			);
 		}
 	}
@@ -87,13 +87,13 @@ class TLM_Admin_Product {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET param; sets dropdown selected state. No data is modified.
-		$selected = isset( $_GET[ TLM_TAXONOMY ] ) ? sanitize_title( wp_unslash( $_GET[ TLM_TAXONOMY ] ) ) : '';
+		$selected = isset( $_GET[ INTSTLM_TAXONOMY ] ) ? sanitize_title( wp_unslash( $_GET[ INTSTLM_TAXONOMY ] ) ) : '';
 
 		wp_dropdown_categories(
 			array(
 				'show_option_all' => __( 'All Locations', 'ints-tour-location-manager' ),
-				'taxonomy'        => TLM_TAXONOMY,
-				'name'            => TLM_TAXONOMY,
+				'taxonomy'        => INTSTLM_TAXONOMY,
+				'name'            => INTSTLM_TAXONOMY,
 				'orderby'         => 'name',
 				'selected'        => $selected,
 				'hierarchical'    => true,
@@ -118,12 +118,12 @@ class TLM_Admin_Product {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only GET filter on admin list table; same pattern used by WP core and WooCommerce.
-		if ( empty( $_GET[ TLM_TAXONOMY ] ) ) {
+		if ( empty( $_GET[ INTSTLM_TAXONOMY ] ) ) {
 			return $query;
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; see comment above.
-		$slug = sanitize_title( wp_unslash( $_GET[ TLM_TAXONOMY ] ) );
+		$slug = sanitize_title( wp_unslash( $_GET[ INTSTLM_TAXONOMY ] ) );
 
 		if ( '' === $slug ) {
 			return $query;
@@ -131,7 +131,7 @@ class TLM_Admin_Product {
 
 		$query->query_vars['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			array(
-				'taxonomy' => TLM_TAXONOMY,
+				'taxonomy' => INTSTLM_TAXONOMY,
 				'field'    => 'slug',
 				'terms'    => $slug,
 			),
@@ -154,12 +154,12 @@ class TLM_Admin_Product {
 
 			// Insert after the product "Categories"/"Tags" columns if present, else after "name".
 			if ( 'product_tag' === $key || 'name' === $key ) {
-				$new_columns['tlm_location'] = __( 'Locations', 'ints-tour-location-manager' );
+				$new_columns['intstlm_location'] = __( 'Locations', 'ints-tour-location-manager' );
 			}
 		}
 
-		if ( ! isset( $new_columns['tlm_location'] ) ) {
-			$new_columns['tlm_location'] = __( 'Locations', 'ints-tour-location-manager' );
+		if ( ! isset( $new_columns['intstlm_location'] ) ) {
+			$new_columns['intstlm_location'] = __( 'Locations', 'ints-tour-location-manager' );
 		}
 
 		return $new_columns;
@@ -172,11 +172,11 @@ class TLM_Admin_Product {
 	 * @param int    $post_id Product/post ID.
 	 */
 	public function render_location_column( $column, $post_id ) {
-		if ( 'tlm_location' !== $column ) {
+		if ( 'intstlm_location' !== $column ) {
 			return;
 		}
 
-		$terms = get_the_terms( $post_id, TLM_TAXONOMY );
+		$terms = get_the_terms( $post_id, INTSTLM_TAXONOMY );
 
 		if ( empty( $terms ) || is_wp_error( $terms ) ) {
 			echo '&#8212;';
@@ -192,7 +192,7 @@ class TLM_Admin_Product {
 					add_query_arg(
 						array(
 							'post_type' => 'product',
-							TLM_TAXONOMY => $term->slug,
+							INTSTLM_TAXONOMY => $term->slug,
 						),
 						admin_url( 'edit.php' )
 					)

@@ -4,7 +4,7 @@
 
 	var frame;
 
-	$( document ).on( 'click', '.tlm-upload-thumbnail', function ( e ) {
+	$( document ).on( 'click', '.intstlm-upload-thumbnail', function ( e ) {
 		e.preventDefault();
 
 		if ( frame ) {
@@ -28,7 +28,7 @@
 				return;
 			}
 
-			$( '#tlm_thumbnail_id' ).val( attachment.id );
+			$( '#intstlm_thumbnail_id' ).val( attachment.id );
 
 			var img = $( '<img>' ).attr( {
 				src:   size.url,
@@ -36,17 +36,17 @@
 				style: 'max-width:150px;display:block;margin-bottom:6px;border-radius:3px;',
 			} );
 
-			$( '#tlm-thumbnail-preview' ).empty().append( img );
-			$( '.tlm-remove-thumbnail' ).show();
+			$( '#intstlm-thumbnail-preview' ).empty().append( img );
+			$( '.intstlm-remove-thumbnail' ).show();
 		} );
 
 		frame.open();
 	} );
 
-	$( document ).on( 'click', '.tlm-remove-thumbnail', function ( e ) {
+	$( document ).on( 'click', '.intstlm-remove-thumbnail', function ( e ) {
 		e.preventDefault();
-		$( '#tlm_thumbnail_id' ).val( '' );
-		$( '#tlm-thumbnail-preview' ).empty();
+		$( '#intstlm_thumbnail_id' ).val( '' );
+		$( '#intstlm-thumbnail-preview' ).empty();
 		$( this ).hide();
 	} );
 }( jQuery ) );

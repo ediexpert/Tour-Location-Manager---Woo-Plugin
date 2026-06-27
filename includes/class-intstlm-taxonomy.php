@@ -10,19 +10,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class TLM_Taxonomy {
+class INTSTLM_Taxonomy {
 
 	/**
 	 * Singleton instance.
 	 *
-	 * @var TLM_Taxonomy|null
+	 * @var INTSTLM_Taxonomy|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get singleton instance.
 	 *
-	 * @return TLM_Taxonomy
+	 * @return INTSTLM_Taxonomy
 	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -37,30 +37,30 @@ class TLM_Taxonomy {
 	private function __construct() {
 		add_action( 'init', array( __CLASS__, 'register_taxonomy' ), 5 );
 
-		// Add manual ordering support (uses term meta "tlm_order").
+		// Add manual ordering support (uses term meta "intstlm_order").
 		add_filter( 'get_terms_args', array( $this, 'maybe_order_terms_args' ), 10, 2 );
 		add_filter( 'get_terms_orderby', array( $this, 'maybe_order_terms_orderby' ), 10, 3 );
 
 		// Add custom "order" field to term add/edit screens.
-		add_action( TLM_TAXONOMY . '_add_form_fields', array( $this, 'add_order_field' ) );
-		add_action( TLM_TAXONOMY . '_edit_form_fields', array( $this, 'edit_order_field' ) );
-		add_action( 'created_' . TLM_TAXONOMY, array( $this, 'save_order_field' ) );
-		add_action( 'edited_' . TLM_TAXONOMY, array( $this, 'save_order_field' ) );
+		add_action( INTSTLM_TAXONOMY . '_add_form_fields', array( $this, 'add_order_field' ) );
+		add_action( INTSTLM_TAXONOMY . '_edit_form_fields', array( $this, 'edit_order_field' ) );
+		add_action( 'created_' . INTSTLM_TAXONOMY, array( $this, 'save_order_field' ) );
+		add_action( 'edited_' . INTSTLM_TAXONOMY, array( $this, 'save_order_field' ) );
 
 		// Add a "Level" column (Country/State/City) for clarity in admin term list.
-		add_filter( 'manage_edit-' . TLM_TAXONOMY . '_columns', array( $this, 'add_level_column' ) );
-		add_filter( 'manage_' . TLM_TAXONOMY . '_custom_column', array( $this, 'render_level_column' ), 10, 3 );
+		add_filter( 'manage_edit-' . INTSTLM_TAXONOMY . '_columns', array( $this, 'add_level_column' ) );
+		add_filter( 'manage_' . INTSTLM_TAXONOMY . '_custom_column', array( $this, 'render_level_column' ), 10, 3 );
 
 		// Thumbnail field on add/edit term screens.
-		add_action( TLM_TAXONOMY . '_add_form_fields', array( $this, 'add_thumbnail_field' ) );
-		add_action( TLM_TAXONOMY . '_edit_form_fields', array( $this, 'edit_thumbnail_field' ) );
-		add_action( 'created_' . TLM_TAXONOMY, array( $this, 'save_thumbnail_field' ) );
-		add_action( 'edited_' . TLM_TAXONOMY, array( $this, 'save_thumbnail_field' ) );
+		add_action( INTSTLM_TAXONOMY . '_add_form_fields', array( $this, 'add_thumbnail_field' ) );
+		add_action( INTSTLM_TAXONOMY . '_edit_form_fields', array( $this, 'edit_thumbnail_field' ) );
+		add_action( 'created_' . INTSTLM_TAXONOMY, array( $this, 'save_thumbnail_field' ) );
+		add_action( 'edited_' . INTSTLM_TAXONOMY, array( $this, 'save_thumbnail_field' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		// Thumbnail column in admin term list.
-		add_filter( 'manage_edit-' . TLM_TAXONOMY . '_columns', array( $this, 'add_thumbnail_column' ) );
-		add_filter( 'manage_' . TLM_TAXONOMY . '_custom_column', array( $this, 'render_thumbnail_column' ), 10, 3 );
+		add_filter( 'manage_edit-' . INTSTLM_TAXONOMY . '_columns', array( $this, 'add_thumbnail_column' ) );
+		add_filter( 'manage_' . INTSTLM_TAXONOMY . '_custom_column', array( $this, 'render_thumbnail_column' ), 10, 3 );
 	}
 
 	/**
@@ -72,7 +72,7 @@ class TLM_Taxonomy {
 	 */
 	public static function register_taxonomy() {
 
-		$settings = TLM_Settings::get_settings();
+		$settings = INTSTLM_Settings::get_settings();
 
 		$slug         = ! empty( $settings['taxonomy_slug'] ) ? $settings['taxonomy_slug'] : 'location';
 		$archive_base = ! empty( $settings['archive_base'] ) ? $settings['archive_base'] : $slug;
@@ -122,14 +122,14 @@ class TLM_Taxonomy {
 		 *
 		 * @param array $args Taxonomy arguments.
 		 */
-		$args = apply_filters( 'tlm_taxonomy_args', $args );
+		$args = apply_filters( 'intstlm_taxonomy_args', $args );
 
-		register_taxonomy( TLM_TAXONOMY, array( 'product' ), $args );
+		register_taxonomy( INTSTLM_TAXONOMY, array( 'product' ), $args );
 	}
 
 	/**
 	 * Allow custom "menu_order" style sorting for our taxonomy terms
-	 * by reading a "tlm_order" term meta value.
+	 * by reading a "intstlm_order" term meta value.
 	 *
 	 * @param array        $args       get_terms() arguments.
 	 * @param array|string $taxonomies Taxonomies being queried.
@@ -138,9 +138,9 @@ class TLM_Taxonomy {
 	public function maybe_order_terms_args( $args, $taxonomies ) {
 		$taxonomies = (array) $taxonomies;
 
-		if ( in_array( TLM_TAXONOMY, $taxonomies, true ) && empty( $args['orderby'] ) ) {
+		if ( in_array( INTSTLM_TAXONOMY, $taxonomies, true ) && empty( $args['orderby'] ) ) {
 			$args['orderby']  = 'meta_value_num';
-			$args['meta_key'] = 'tlm_order'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			$args['meta_key'] = 'intstlm_order'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			$args['order']    = 'ASC';
 		}
 
@@ -159,9 +159,8 @@ class TLM_Taxonomy {
 	public function maybe_order_terms_orderby( $orderby, $args, $taxonomies ) {
 		$taxonomies = (array) $taxonomies;
 
-		if ( in_array( TLM_TAXONOMY, $taxonomies, true ) && isset( $args['meta_key'] ) && 'tlm_order' === $args['meta_key'] ) {
-			global $wpdb;
-			return "CAST(tlm_order_meta.meta_value AS SIGNED), t.name ASC";
+		if ( in_array( INTSTLM_TAXONOMY, $taxonomies, true ) && isset( $args['meta_key'] ) && 'intstlm_order' === $args['meta_key'] ) {
+			return 'CAST(mt1.meta_value AS SIGNED), t.name ASC';
 		}
 
 		return $orderby;
@@ -173,9 +172,9 @@ class TLM_Taxonomy {
 	public function add_order_field() {
 		?>
 		<div class="form-field term-order-wrap">
-			<label for="tlm_order"><?php esc_html_e( 'Display Order', 'ints-tour-location-manager' ); ?></label>
-			<?php wp_nonce_field( 'tlm_save_term_meta', 'tlm_term_nonce' ); ?>
-			<input type="number" name="tlm_order" id="tlm_order" value="0" step="1" />
+			<label for="intstlm_order"><?php esc_html_e( 'Display Order', 'ints-tour-location-manager' ); ?></label>
+			<?php wp_nonce_field( 'intstlm_save_term_meta', 'intstlm_term_nonce' ); ?>
+			<input type="number" name="intstlm_order" id="intstlm_order" value="0" step="1" />
 			<p class="description">
 				<?php esc_html_e( 'Locations are sorted by this number (lowest first) within the same level, then alphabetically.', 'ints-tour-location-manager' ); ?>
 			</p>
@@ -189,14 +188,14 @@ class TLM_Taxonomy {
 	 * @param WP_Term $term Term object.
 	 */
 	public function edit_order_field( $term ) {
-		$value = get_term_meta( $term->term_id, 'tlm_order', true );
+		$value = get_term_meta( $term->term_id, 'intstlm_order', true );
 		$value = ( '' === $value ) ? 0 : $value;
 		?>
 		<tr class="form-field term-order-wrap">
-			<th scope="row"><label for="tlm_order"><?php esc_html_e( 'Display Order', 'ints-tour-location-manager' ); ?></label></th>
+			<th scope="row"><label for="intstlm_order"><?php esc_html_e( 'Display Order', 'ints-tour-location-manager' ); ?></label></th>
 			<td>
-				<?php wp_nonce_field( 'tlm_save_term_meta', 'tlm_term_nonce' ); ?>
-				<input type="number" name="tlm_order" id="tlm_order" value="<?php echo esc_attr( $value ); ?>" step="1" />
+				<?php wp_nonce_field( 'intstlm_save_term_meta', 'intstlm_term_nonce' ); ?>
+				<input type="number" name="intstlm_order" id="intstlm_order" value="<?php echo esc_attr( $value ); ?>" step="1" />
 				<p class="description">
 					<?php esc_html_e( 'Locations are sorted by this number (lowest first) within the same level, then alphabetically.', 'ints-tour-location-manager' ); ?>
 				</p>
@@ -211,7 +210,7 @@ class TLM_Taxonomy {
 	 * @param int $term_id Term ID.
 	 */
 	public function save_order_field( $term_id ) {
-		if ( ! isset( $_POST['tlm_term_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['tlm_term_nonce'] ) ), 'tlm_save_term_meta' ) ) {
+		if ( ! isset( $_POST['intstlm_term_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['intstlm_term_nonce'] ) ), 'intstlm_save_term_meta' ) ) {
 			return;
 		}
 
@@ -219,9 +218,9 @@ class TLM_Taxonomy {
 			return;
 		}
 
-		if ( isset( $_POST['tlm_order'] ) ) {
-			$order = absint( $_POST['tlm_order'] );
-			update_term_meta( $term_id, 'tlm_order', $order );
+		if ( isset( $_POST['intstlm_order'] ) ) {
+			$order = absint( $_POST['intstlm_order'] );
+			update_term_meta( $term_id, 'intstlm_order', $order );
 		}
 	}
 
@@ -231,16 +230,16 @@ class TLM_Taxonomy {
 	public function enqueue_admin_scripts( $hook ) {
 		$screen = get_current_screen();
 		// 'edit-location' = term list/add page; 'location' = edit single term page.
-		if ( ! $screen || ! in_array( $screen->id, array( 'edit-' . TLM_TAXONOMY, TLM_TAXONOMY ), true ) ) {
+		if ( ! $screen || ! in_array( $screen->id, array( 'edit-' . INTSTLM_TAXONOMY, INTSTLM_TAXONOMY ), true ) ) {
 			return;
 		}
 
 		wp_enqueue_media();
 		wp_enqueue_script(
-			'tlm-admin-thumbnail',
-			TLM_PLUGIN_URL . 'assets/js/tlm-admin-thumbnail.js',
+			'intstlm-admin-thumbnail',
+			INTSTLM_PLUGIN_URL . 'assets/js/intstlm-admin-thumbnail.js',
 			array( 'jquery' ),
-			TLM_VERSION,
+			INTSTLM_VERSION,
 			true
 		);
 	}
@@ -252,11 +251,10 @@ class TLM_Taxonomy {
 		?>
 		<div class="form-field term-thumbnail-wrap">
 			<label><?php esc_html_e( 'Thumbnail', 'ints-tour-location-manager' ); ?></label>
-			<div class="tlm-thumbnail-preview" id="tlm-thumbnail-preview"></div>
-			<input type="hidden" name="tlm_thumbnail_id" id="tlm_thumbnail_id" value="" />
-			<?php wp_nonce_field( 'tlm_save_term_meta', 'tlm_term_nonce' ); ?>
-			<button type="button" class="button tlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'ints-tour-location-manager' ); ?></button>
-			<button type="button" class="button tlm-remove-thumbnail" style="display:none;"><?php esc_html_e( 'Remove Image', 'ints-tour-location-manager' ); ?></button>
+			<div class="intstlm-thumbnail-preview" id="intstlm-thumbnail-preview"></div>
+			<input type="hidden" name="intstlm_thumbnail_id" id="intstlm_thumbnail_id" value="" />
+			<button type="button" class="button intstlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'ints-tour-location-manager' ); ?></button>
+			<button type="button" class="button intstlm-remove-thumbnail" style="display:none;"><?php esc_html_e( 'Remove Image', 'ints-tour-location-manager' ); ?></button>
 			<p class="description"><?php esc_html_e( 'Thumbnail image shown when displaying locations in a grid.', 'ints-tour-location-manager' ); ?></p>
 		</div>
 		<?php
@@ -268,21 +266,20 @@ class TLM_Taxonomy {
 	 * @param WP_Term $term Term object.
 	 */
 	public function edit_thumbnail_field( $term ) {
-		$thumbnail_id = (int) get_term_meta( $term->term_id, 'tlm_thumbnail_id', true );
+		$thumbnail_id = (int) get_term_meta( $term->term_id, 'intstlm_thumbnail_id', true );
 		$image_src    = $thumbnail_id ? wp_get_attachment_image_url( $thumbnail_id, 'thumbnail' ) : '';
 		?>
 		<tr class="form-field term-thumbnail-wrap">
 			<th scope="row"><label><?php esc_html_e( 'Thumbnail', 'ints-tour-location-manager' ); ?></label></th>
 			<td>
-				<div class="tlm-thumbnail-preview" id="tlm-thumbnail-preview">
+				<div class="intstlm-thumbnail-preview" id="intstlm-thumbnail-preview">
 					<?php if ( $image_src ) : ?>
 						<img src="<?php echo esc_url( $image_src ); ?>" alt="" style="max-width:150px;display:block;margin-bottom:6px;" />
 					<?php endif; ?>
 				</div>
-				<input type="hidden" name="tlm_thumbnail_id" id="tlm_thumbnail_id" value="<?php echo esc_attr( $thumbnail_id ?: '' ); ?>" />
-				<?php wp_nonce_field( 'tlm_save_term_meta', 'tlm_term_nonce' ); ?>
-				<button type="button" class="button tlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'ints-tour-location-manager' ); ?></button>
-				<button type="button" class="button tlm-remove-thumbnail"<?php echo $thumbnail_id ? '' : ' style="display:none;"'; ?>><?php esc_html_e( 'Remove Image', 'ints-tour-location-manager' ); ?></button>
+				<input type="hidden" name="intstlm_thumbnail_id" id="intstlm_thumbnail_id" value="<?php echo esc_attr( $thumbnail_id ?: '' ); ?>" />
+				<button type="button" class="button intstlm-upload-thumbnail"><?php esc_html_e( 'Upload / Choose Image', 'ints-tour-location-manager' ); ?></button>
+				<button type="button" class="button intstlm-remove-thumbnail"<?php echo $thumbnail_id ? '' : ' style="display:none;"'; ?>><?php esc_html_e( 'Remove Image', 'ints-tour-location-manager' ); ?></button>
 				<p class="description"><?php esc_html_e( 'Thumbnail image shown when displaying locations in a grid.', 'ints-tour-location-manager' ); ?></p>
 			</td>
 		</tr>
@@ -295,11 +292,11 @@ class TLM_Taxonomy {
 	 * @param int $term_id Term ID.
 	 */
 	public function save_thumbnail_field( $term_id ) {
-		if ( ! isset( $_POST['tlm_term_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['tlm_term_nonce'] ) ), 'tlm_save_term_meta' ) ) {
+		if ( ! isset( $_POST['intstlm_term_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['intstlm_term_nonce'] ) ), 'intstlm_save_term_meta' ) ) {
 			return;
 		}
 
-		if ( ! isset( $_POST['tlm_thumbnail_id'] ) ) {
+		if ( ! isset( $_POST['intstlm_thumbnail_id'] ) ) {
 			return;
 		}
 
@@ -307,11 +304,11 @@ class TLM_Taxonomy {
 			return;
 		}
 
-		$thumbnail_id = absint( $_POST['tlm_thumbnail_id'] );
+		$thumbnail_id = absint( $_POST['intstlm_thumbnail_id'] );
 		if ( $thumbnail_id ) {
-			update_term_meta( $term_id, 'tlm_thumbnail_id', $thumbnail_id );
+			update_term_meta( $term_id, 'intstlm_thumbnail_id', $thumbnail_id );
 		} else {
-			delete_term_meta( $term_id, 'tlm_thumbnail_id' );
+			delete_term_meta( $term_id, 'intstlm_thumbnail_id' );
 		}
 	}
 
@@ -325,7 +322,7 @@ class TLM_Taxonomy {
 		$new = array();
 		foreach ( $columns as $key => $label ) {
 			if ( 'name' === $key ) {
-				$new['tlm_thumbnail'] = __( 'Thumbnail', 'ints-tour-location-manager' );
+				$new['intstlm_thumbnail'] = __( 'Thumbnail', 'ints-tour-location-manager' );
 			}
 			$new[ $key ] = $label;
 		}
@@ -341,11 +338,11 @@ class TLM_Taxonomy {
 	 * @return string
 	 */
 	public function render_thumbnail_column( $content, $column_name, $term_id ) {
-		if ( 'tlm_thumbnail' !== $column_name ) {
+		if ( 'intstlm_thumbnail' !== $column_name ) {
 			return $content;
 		}
 
-		$thumbnail_id = (int) get_term_meta( $term_id, 'tlm_thumbnail_id', true );
+		$thumbnail_id = (int) get_term_meta( $term_id, 'intstlm_thumbnail_id', true );
 		if ( ! $thumbnail_id ) {
 			return '<span aria-hidden="true">—</span>';
 		}
@@ -367,7 +364,7 @@ class TLM_Taxonomy {
 			$new_columns[ $key ] = $label;
 
 			if ( 'name' === $key ) {
-				$new_columns['tlm_level'] = __( 'Level', 'ints-tour-location-manager' );
+				$new_columns['intstlm_level'] = __( 'Level', 'ints-tour-location-manager' );
 			}
 		}
 
@@ -383,11 +380,11 @@ class TLM_Taxonomy {
 	 * @return string
 	 */
 	public function render_level_column( $content, $column_name, $term_id ) {
-		if ( 'tlm_level' !== $column_name ) {
+		if ( 'intstlm_level' !== $column_name ) {
 			return $content;
 		}
 
-		$depth = tlm_get_term_depth( $term_id );
+		$depth = intstlm_get_term_depth( $term_id );
 
 		switch ( $depth ) {
 			case 0:

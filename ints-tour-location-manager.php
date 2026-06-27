@@ -26,33 +26,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants.
  */
-define( 'TLM_VERSION', '1.0.0' );
-define( 'TLM_PLUGIN_FILE', __FILE__ );
-define( 'TLM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'TLM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'TLM_TAXONOMY', 'location' );
+define( 'INTSTLM_VERSION', '1.0.0' );
+define( 'INTSTLM_PLUGIN_FILE', __FILE__ );
+define( 'INTSTLM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'INTSTLM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'INTSTLM_TAXONOMY', 'intstlm_location' );
 
 /**
  * Composer-free autoloader for our class files.
  *
  * Classes follow the naming convention:
- *   Tour_Location_Manager_XxxYyy  ->  includes/class-tlm-xxx-yyy.php
- *   TLM_XxxYyy                    ->  includes/class-tlm-xxx-yyy.php
+ *   Tour_Location_Manager_XxxYyy  ->  includes/class-intstlm-xxx-yyy.php
+ *   INTSTLM_XxxYyy                    ->  includes/class-intstlm-xxx-yyy.php
  */
 spl_autoload_register(
 	function ( $class_name ) {
-		if ( 0 !== strpos( $class_name, 'TLM_' ) ) {
+		if ( 0 !== strpos( $class_name, 'INTSTLM_' ) ) {
 			return;
 		}
 
-		$file_part = str_replace( 'TLM_', '', $class_name );
+		$file_part = str_replace( 'INTSTLM_', '', $class_name );
 		$file_part = strtolower( str_replace( '_', '-', $file_part ) );
-		$file_name = 'class-tlm-' . $file_part . '.php';
+		$file_name = 'class-intstlm-' . $file_part . '.php';
 
 		$paths = array(
-			TLM_PLUGIN_DIR . 'includes/' . $file_name,
-			TLM_PLUGIN_DIR . 'admin/' . $file_name,
-			TLM_PLUGIN_DIR . 'public/' . $file_name,
+			INTSTLM_PLUGIN_DIR . 'includes/' . $file_name,
+			INTSTLM_PLUGIN_DIR . 'admin/' . $file_name,
+			INTSTLM_PLUGIN_DIR . 'public/' . $file_name,
 		);
 
 		foreach ( $paths as $path ) {
@@ -75,8 +75,8 @@ add_action(
 	'before_woocommerce_init',
 	function () {
 		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', TLM_PLUGIN_FILE, true );
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', TLM_PLUGIN_FILE, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', INTSTLM_PLUGIN_FILE, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', INTSTLM_PLUGIN_FILE, true );
 		}
 	}
 );
@@ -87,10 +87,10 @@ add_action(
  * Registers the taxonomy (so its rewrite rules exist) and flushes
  * rewrite rules so the SEO-friendly archive permalinks work immediately.
  */
-function tlm_activate_plugin() {
+function intstlm_activate_plugin() {
 	// Make sure WooCommerce is active; if not, deactivate gracefully.
 	if ( ! class_exists( 'WooCommerce' ) ) {
-		deactivate_plugins( plugin_basename( TLM_PLUGIN_FILE ) );
+		deactivate_plugins( plugin_basename( INTSTLM_PLUGIN_FILE ) );
 		wp_die(
 			esc_html__( 'Tour Location Manager requires WooCommerce to be installed and active.', 'ints-tour-location-manager' ),
 			esc_html__( 'Plugin Activation Error', 'ints-tour-location-manager' ),
@@ -99,16 +99,16 @@ function tlm_activate_plugin() {
 	}
 
 	// Register taxonomy & post type connections before flushing.
-	TLM_Taxonomy::register_taxonomy();
+	INTSTLM_Taxonomy::register_taxonomy();
 
 	// Set default options on first activation only.
-	if ( false === get_option( 'tlm_settings' ) ) {
-		add_option( 'tlm_settings', TLM_Settings::get_default_settings() );
+	if ( false === get_option( 'intstlm_settings' ) ) {
+		add_option( 'intstlm_settings', INTSTLM_Settings::get_default_settings() );
 	}
 
 	flush_rewrite_rules();
 }
-register_activation_hook( TLM_PLUGIN_FILE, 'tlm_activate_plugin' );
+register_activation_hook( INTSTLM_PLUGIN_FILE, 'intstlm_activate_plugin' );
 
 /**
  * Deactivation hook.
@@ -117,15 +117,15 @@ register_activation_hook( TLM_PLUGIN_FILE, 'tlm_activate_plugin' );
  * Does NOT delete terms/options — that is left to an optional uninstall.php
  * so users don't lose data on a simple deactivation.
  */
-function tlm_deactivate_plugin() {
+function intstlm_deactivate_plugin() {
 	flush_rewrite_rules();
 }
-register_deactivation_hook( TLM_PLUGIN_FILE, 'tlm_deactivate_plugin' );
+register_deactivation_hook( INTSTLM_PLUGIN_FILE, 'intstlm_deactivate_plugin' );
 
 /**
  * Initialize the plugin once all plugins are loaded.
  */
-function tlm_run_plugin() {
+function intstlm_run_plugin() {
 
 	// Bail early with an admin notice if WooCommerce is missing.
 	if ( ! class_exists( 'WooCommerce' ) ) {
@@ -143,18 +143,18 @@ function tlm_run_plugin() {
 	}
 
 	// Core taxonomy registration.
-	TLM_Taxonomy::instance();
+	INTSTLM_Taxonomy::instance();
 
 	// Admin product screen integration.
-	TLM_Admin_Product::instance();
+	INTSTLM_Admin_Product::instance();
 
 	// Settings page.
-	TLM_Settings::instance();
+	INTSTLM_Settings::instance();
 
 	// Frontend shortcodes & archive templates.
-	TLM_Frontend::instance();
+	INTSTLM_Frontend::instance();
 
 	// Helper functions are file-based (procedural), loaded directly.
-	require_once TLM_PLUGIN_DIR . 'includes/tlm-helper-functions.php';
+	require_once INTSTLM_PLUGIN_DIR . 'includes/intstlm-helper-functions.php';
 }
-add_action( 'plugins_loaded', 'tlm_run_plugin' );
+add_action( 'plugins_loaded', 'intstlm_run_plugin' );

@@ -12,19 +12,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class TLM_Frontend {
+class INTSTLM_Frontend {
 
 	/**
 	 * Singleton instance.
 	 *
-	 * @var TLM_Frontend|null
+	 * @var INTSTLM_Frontend|null
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get singleton instance.
 	 *
-	 * @return TLM_Frontend
+	 * @return INTSTLM_Frontend
 	 */
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -37,8 +37,8 @@ class TLM_Frontend {
 	 * Constructor.
 	 */
 	private function __construct() {
-		add_shortcode( 'tour_location_menu', array( $this, 'render_location_menu_shortcode' ) );
-		add_shortcode( 'tour_locations', array( $this, 'render_tour_locations_shortcode' ) );
+		add_shortcode( 'intstlm_tour_location_menu', array( $this, 'render_location_menu_shortcode' ) );
+		add_shortcode( 'intstlm_tour_locations', array( $this, 'render_tour_locations_shortcode' ) );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
@@ -60,24 +60,24 @@ class TLM_Frontend {
 	 */
 	public function enqueue_assets() {
 		wp_register_style(
-			'tlm-frontend',
-			TLM_PLUGIN_URL . 'assets/css/tlm-frontend.css',
+			'intstlm-frontend',
+			INTSTLM_PLUGIN_URL . 'assets/css/intstlm-frontend.css',
 			array(),
-			TLM_VERSION
+			INTSTLM_VERSION
 		);
 
 		wp_register_script(
-			'tlm-frontend',
-			TLM_PLUGIN_URL . 'assets/js/tlm-frontend.js',
+			'intstlm-frontend',
+			INTSTLM_PLUGIN_URL . 'assets/js/intstlm-frontend.js',
 			array(),
-			TLM_VERSION,
+			INTSTLM_VERSION,
 			true
 		);
 
 		// Only enqueue when actually needed: shortcode pages or taxonomy archives.
-		if ( is_tax( TLM_TAXONOMY ) || $this->page_has_shortcode() ) {
-			wp_enqueue_style( 'tlm-frontend' );
-			wp_enqueue_script( 'tlm-frontend' );
+		if ( is_tax( INTSTLM_TAXONOMY ) || $this->page_has_shortcode() ) {
+			wp_enqueue_style( 'intstlm-frontend' );
+			wp_enqueue_script( 'intstlm-frontend' );
 		}
 	}
 
@@ -93,8 +93,8 @@ class TLM_Frontend {
 			return false;
 		}
 
-		return has_shortcode( $post->post_content, 'tour_location_menu' )
-			|| has_shortcode( $post->post_content, 'tour_locations' );
+		return has_shortcode( $post->post_content, 'intstlm_tour_location_menu' )
+			|| has_shortcode( $post->post_content, 'intstlm_tour_locations' );
 	}
 
 	/**
@@ -104,12 +104,12 @@ class TLM_Frontend {
 	 * @return array
 	 */
 	public function add_body_class( $classes ) {
-		if ( is_tax( TLM_TAXONOMY ) ) {
-			$classes[] = 'tlm-location-archive';
+		if ( is_tax( INTSTLM_TAXONOMY ) ) {
+			$classes[] = 'intstlm-location-archive';
 
 			$queried = get_queried_object();
 			if ( $queried instanceof WP_Term ) {
-				$classes[] = 'tlm-location-level-' . tlm_get_term_depth( $queried->term_id );
+				$classes[] = 'intstlm-location-level-' . intstlm_get_term_depth( $queried->term_id );
 			}
 		}
 
@@ -124,7 +124,7 @@ class TLM_Frontend {
 	 * @return array
 	 */
 	public function filter_document_title( $title_parts ) {
-		if ( ! is_tax( TLM_TAXONOMY ) ) {
+		if ( ! is_tax( INTSTLM_TAXONOMY ) ) {
 			return $title_parts;
 		}
 
@@ -137,7 +137,7 @@ class TLM_Frontend {
 		// If the term already has an SEO-plugin-managed title, leave it alone.
 		// We only enrich the default WordPress title.
 		if ( empty( $title_parts['title'] ) || $title_parts['title'] === $queried->name ) {
-			$ancestors = tlm_get_location_ancestors( $queried->term_id );
+			$ancestors = intstlm_get_location_ancestors( $queried->term_id );
 			$names     = wp_list_pluck( $ancestors, 'name' );
 			$names     = array_reverse( $names );
 
@@ -165,14 +165,14 @@ class TLM_Frontend {
 	 * @return string
 	 */
 	public function taxonomy_template( $template ) {
-		if ( ! is_tax( TLM_TAXONOMY ) ) {
+		if ( ! is_tax( INTSTLM_TAXONOMY ) ) {
 			return $template;
 		}
 
 		// Respect theme overrides: taxonomy-location.php, taxonomy-location-{slug}.php.
 		$theme_override = locate_template(
 			array(
-				'taxonomy-' . TLM_TAXONOMY . '.php',
+				'taxonomy-' . INTSTLM_TAXONOMY . '.php',
 			)
 		);
 
@@ -180,7 +180,7 @@ class TLM_Frontend {
 			return $template;
 		}
 
-		$plugin_template = TLM_PLUGIN_DIR . 'public/templates/taxonomy-location.php';
+		$plugin_template = INTSTLM_PLUGIN_DIR . 'public/templates/taxonomy-intstlm_location.php';
 
 		if ( file_exists( $plugin_template ) ) {
 			return $plugin_template;
@@ -201,7 +201,7 @@ class TLM_Frontend {
 	 * @return string HTML output.
 	 */
 	public function render_location_menu_shortcode( $atts ) {
-		$settings = TLM_Settings::get_settings();
+		$settings = INTSTLM_Settings::get_settings();
 
 		$atts = shortcode_atts(
 			array(
@@ -212,7 +212,7 @@ class TLM_Frontend {
 				'expand_all'  => $settings['expand_all'] ? 'yes' : 'no',
 			),
 			$atts,
-			'tour_location_menu'
+			'intstlm_tour_location_menu'
 		);
 
 		$parent_id   = absint( $atts['parent'] );
@@ -220,22 +220,22 @@ class TLM_Frontend {
 		$show_counts = ( 'yes' === strtolower( $atts['show_counts'] ) );
 		$expand_all  = ( 'yes' === strtolower( $atts['expand_all'] ) );
 
-		$top_terms = tlm_get_child_locations( $parent_id, false );
+		$top_terms = intstlm_get_child_locations( $parent_id, false );
 
-		// Apply manual ordering: meta "tlm_order" then name.
+		// Apply manual ordering: meta "intstlm_order" then name.
 		$top_terms = $this->order_terms( $top_terms );
 
 		if ( empty( $top_terms ) ) {
-			return '<p class="tlm-empty">' . esc_html__( 'No locations have been added yet.', 'ints-tour-location-manager' ) . '</p>';
+			return '<p class="intstlm-empty">' . esc_html__( 'No locations have been added yet.', 'ints-tour-location-manager' ) . '</p>';
 		}
 
 		ob_start();
 		?>
-		<div class="tlm-location-menu<?php echo $expand_all ? ' tlm-expanded' : ''; ?>">
+		<div class="intstlm-location-menu<?php echo $expand_all ? ' intstlm-expanded' : ''; ?>">
 			<?php if ( ! empty( $atts['title'] ) ) : ?>
-				<h3 class="tlm-location-menu-title"><?php echo esc_html( $atts['title'] ); ?></h3>
+				<h3 class="intstlm-location-menu-title"><?php echo esc_html( $atts['title'] ); ?></h3>
 			<?php endif; ?>
-			<?php echo $this->render_term_list( $top_terms, 1, $max_depth, $show_counts ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo $this->render_term_list( $top_terms, 1, $max_depth, $show_counts ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- all output escaped via esc_html/esc_url/esc_attr within render_term_list() ?>
 		</div>
 		<?php
 		return ob_get_clean();
@@ -262,11 +262,11 @@ class TLM_Frontend {
 				'show_counts' => 'no',
 			),
 			$atts,
-			'tour_locations'
+			'intstlm_tour_locations'
 		);
 
 		$query_args = array(
-			'taxonomy'   => TLM_TAXONOMY,
+			'taxonomy'   => INTSTLM_TAXONOMY,
 			'hide_empty' => (bool) $atts['hide_empty'],
 			'order'      => strtoupper( $atts['order'] ) === 'DESC' ? 'DESC' : 'ASC',
 		);
@@ -290,7 +290,7 @@ class TLM_Frontend {
 		$terms = get_terms( $query_args );
 
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
-			return '<p class="tlm-empty">' . esc_html__( 'No locations found.', 'ints-tour-location-manager' ) . '</p>';
+			return '<p class="intstlm-empty">' . esc_html__( 'No locations found.', 'ints-tour-location-manager' ) . '</p>';
 		}
 
 		$columns     = max( 1, min( 6, absint( $atts['columns'] ) ) );
@@ -301,12 +301,12 @@ class TLM_Frontend {
 
 		ob_start();
 		?>
-		<div class="woocommerce columns-<?php echo esc_attr( $columns ); ?> tlm-locations-grid">
+		<div class="woocommerce columns-<?php echo esc_attr( $columns ); ?> intstlm-locations-grid">
 			<ul class="products columns-<?php echo esc_attr( $columns ); ?>" style="--wc-columns:<?php echo esc_attr( $columns ); ?>">
 
 			<?php foreach ( $terms as $term ) : ?>
 				<?php
-				$thumbnail_id = (int) get_term_meta( $term->term_id, 'tlm_thumbnail_id', true );
+				$thumbnail_id = (int) get_term_meta( $term->term_id, 'intstlm_thumbnail_id', true );
 
 				if ( $thumbnail_id ) {
 					$image = wp_get_attachment_image(
@@ -344,7 +344,7 @@ class TLM_Frontend {
 	}
 
 	/**
-	 * Sort an array of WP_Term objects by "tlm_order" term meta, then by name.
+	 * Sort an array of WP_Term objects by "intstlm_order" term meta, then by name.
 	 *
 	 * @param WP_Term[] $terms Terms to sort.
 	 * @return WP_Term[]
@@ -357,8 +357,8 @@ class TLM_Frontend {
 		usort(
 			$terms,
 			function ( $a, $b ) {
-				$order_a = (int) get_term_meta( $a->term_id, 'tlm_order', true );
-				$order_b = (int) get_term_meta( $b->term_id, 'tlm_order', true );
+				$order_a = (int) get_term_meta( $a->term_id, 'intstlm_order', true );
+				$order_b = (int) get_term_meta( $b->term_id, 'intstlm_order', true );
 
 				if ( $order_a === $order_b ) {
 					return strcasecmp( $a->name, $b->name );
@@ -385,52 +385,52 @@ class TLM_Frontend {
 			return '';
 		}
 
-		$html  = '<ul class="tlm-location-list tlm-level-' . absint( $level ) . '">';
+		$html  = '<ul class="intstlm-location-list intstlm-level-' . absint( $level ) . '">';
 
 		foreach ( $terms as $term ) {
 			$children = array();
 
 			if ( $level < $max_depth ) {
-				$children = $this->order_terms( tlm_get_child_locations( $term->term_id, false ) );
+				$children = $this->order_terms( intstlm_get_child_locations( $term->term_id, false ) );
 			}
 
 			$has_children = ! empty( $children );
 
-			$item_classes = array( 'tlm-location-item' );
+			$item_classes = array( 'intstlm-location-item' );
 			if ( $has_children ) {
-				$item_classes[] = 'tlm-has-children';
+				$item_classes[] = 'intstlm-has-children';
 			}
 
 			$html .= '<li class="' . esc_attr( implode( ' ', $item_classes ) ) . '">';
 
-			$html .= '<div class="tlm-location-row">';
+			$html .= '<div class="intstlm-location-row">';
 
 			if ( $has_children ) {
-				$html .= '<button type="button" class="tlm-toggle" aria-expanded="false" aria-label="' .
+				$html .= '<button type="button" class="intstlm-toggle" aria-expanded="false" aria-label="' .
 					/* translators: %s: location name */
 					esc_attr( sprintf( __( 'Toggle %s', 'ints-tour-location-manager' ), $term->name ) ) .
 					'"><span aria-hidden="true">+</span></button>';
 			} else {
-				$html .= '<span class="tlm-toggle tlm-toggle-empty" aria-hidden="true"></span>';
+				$html .= '<span class="intstlm-toggle intstlm-toggle-empty" aria-hidden="true"></span>';
 			}
 
 			$html .= sprintf(
-				'<a href="%1$s" class="tlm-location-link">%2$s</a>',
+				'<a href="%1$s" class="intstlm-location-link">%2$s</a>',
 				esc_url( get_term_link( $term ) ),
 				esc_html( $term->name )
 			);
 
 			if ( $show_counts ) {
 				$html .= sprintf(
-					' <span class="tlm-count">(%d)</span>',
+					' <span class="intstlm-count">(%d)</span>',
 					(int) $term->count
 				);
 			}
 
-			$html .= '</div>'; // .tlm-location-row
+			$html .= '</div>'; // .intstlm-location-row
 
 			if ( $has_children ) {
-				$html .= '<div class="tlm-location-children">';
+				$html .= '<div class="intstlm-location-children">';
 				$html .= $this->render_term_list( $children, $level + 1, $max_depth, $show_counts );
 				$html .= '</div>';
 			}
